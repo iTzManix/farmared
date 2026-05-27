@@ -45,8 +45,8 @@ export async function getPaginated(
   const query = db
     .selectFrom(table)
     .selectAll()
-    .limit(pageSize)
-    .offset(offset);
+    .offset(offset)
+    .fetch(pageSize);
 
   if (filters) {
     Object.entries(filters).forEach(([key, value]) => {
