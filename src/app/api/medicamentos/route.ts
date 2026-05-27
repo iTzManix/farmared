@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sql } from 'kysely';
 import { getSession, getAccessiblesPaises, isSuperAdmin } from '@/lib/auth/helpers';
 import { getDbForCountry, getAllDbs } from '@/lib/db';
 import { medicamentoSchema } from '@/lib/validations';
@@ -26,8 +27,8 @@ export async function GET(request: NextRequest) {
             .selectAll()
             .where('pais', '=', pais)
             .orderBy('id_medicamento', 'desc')
-            .limit(pageSize)
             .offset((page - 1) * pageSize)
+            .fetch(pageSize)
             .execute();
           return { pais, data };
         })
@@ -48,11 +49,11 @@ export async function GET(request: NextRequest) {
       .selectAll()
       .where('pais', '=', paisesAccesibles[0])
       .orderBy('id_medicamento', 'desc')
-      .limit(pageSize)
-      .offset((page - 1) * pageSize);
+      .offset((page - 1) * pageSize)
+      .fetch(pageSize);
 
     if (search) {
-      query = query.where('nombre', 'ilike', `%${search}%`);
+      query = query.where(sql`LOWER(nombre)`, 'like', `%${search.toLowerCase()}%`);
     }
 
     const data = await query.execute();

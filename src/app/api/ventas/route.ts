@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (isSuperAdmin(session)) {
       const results = await Promise.all(getAllDbs().map(({ pais, db }) =>
         db.selectFrom('venta').selectAll().where('pais', '=', pais)
-          .orderBy('id_venta', 'desc').limit(pageSize).offset((page - 1) * pageSize).execute()
+          .orderBy('id_venta', 'desc').offset((page - 1) * pageSize).fetch(pageSize).execute()
       ));
       return NextResponse.json({ data: results.flat(), page, pageSize });
     }
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const data = await db.selectFrom('venta').selectAll()
       .where('pais', '=', paises[0])
       .orderBy('id_venta', 'desc')
-      .limit(pageSize).offset((page - 1) * pageSize).execute();
+      .offset((page - 1) * pageSize).fetch(pageSize).execute();
     return NextResponse.json({ data, page, pageSize });
   } catch (e) { return handleApiError(e); }
 }

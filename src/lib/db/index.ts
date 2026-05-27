@@ -34,7 +34,7 @@ export async function checkNodeHealth(pais: Pais): Promise<{ healthy: boolean; e
   const start = performance.now();
   try {
     const db = getDbForCountry(pais);
-    await db.selectFrom('sucursal').select('id_sucursal').limit(1).execute();
+    await db.selectFrom('sucursal').select('id_sucursal').orderBy('id_sucursal', 'asc').offset(0).fetch(1).execute();
     const latency = Math.round(performance.now() - start);
     return { healthy: true, latencyMs: latency };
   } catch (e: unknown) {
