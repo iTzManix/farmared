@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession, getAccessiblesPaises, isSuperAdmin } from '@/lib/auth/helpers';
 import { getDbForCountry, getAllDbs } from '@/lib/db';
 import { handleApiError } from '@/lib/crud/helpers';
+import { ventaSchema } from '@/lib/validations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,17 +37,18 @@ export async function POST(request: NextRequest) {
     if (!session?.user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
     const body = await request.json();
+    const parsed = ventaSchema.parse(body);
     const pais = session.user.pais;
     if (!pais) return NextResponse.json({ error: 'Sin país' }, { status: 403 });
 
     const db = getDbForCountry(pais);
     const result = await db.insertInto('venta').values({
       pais,
-      id_sucursal: body.id_sucursal,
-      id_empleado: body.id_empleado ?? null,
-      id_cliente: body.id_cliente ?? null,
-      moneda: body.moneda,
-      monto_total: body.monto_total,
+      id_sucursal: parsed.id_sucursal,
+      id_empleado: parsed.id_empleado ?? null,
+      id_cliente: parsed.id_cliente ?? null,
+      moneda: parsed.moneda,
+      monto_total: parsed.monto_total,
       fecha_local: new Date(),
       fecha_utc: new Date(),
     }).executeTakeFirst();

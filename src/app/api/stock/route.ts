@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSession, getAccessiblesPaises, isSuperAdmin } from '@/lib/auth/helpers';
 import { getDbForCountry, getAllDbs } from '@/lib/db';
 import { handleApiError } from '@/lib/crud/helpers';
+import { stockSchema } from '@/lib/validations';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,11 +37,12 @@ export async function POST(request: NextRequest) {
     if (!session?.user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
     const body = await request.json();
+    const parsed = stockSchema.parse(body);
     const pais = session.user.pais;
     if (!pais) return NextResponse.json({ error: 'Sin país' }, { status: 403 });
 
     const db = getDbForCountry(pais);
-    await db.insertInto('stock').values({ pais, ...body }).executeTakeFirst();
+    await db.insertInto('stock').values({ pais, ...parsed }).executeTakeFirst();
     return NextResponse.json({ success: true });
   } catch (e) { return handleApiError(e); }
 }
