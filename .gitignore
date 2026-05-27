@@ -30,8 +30,34 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env files — NEVER commit credentials (DB passwords, API keys, etc.)
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+.env.staging
+!.env.example
+
+# database credentials & config
+db-config*.json
+db-config*.ts
+db-config*.js
+**/database.config.*
+**/credentials.*
+*.dsn
+
+# ODBC configuration
+odbc.ini
+odbcinst.ini
+.odbc.ini
+
+# SSL/TLS certificates
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
 
 # vercel
 .vercel

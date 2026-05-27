@@ -1,26 +1,195 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ──────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Canvas — the viewport background */
+  --canvas:          #050B18;
+
+  /* Surface layers — each slightly lighter than the one below */
+  --surface-0:       #070E1C;   /* deepest panels */
+  --surface-1:       #0B1528;   /* sidebar, header, cards */
+  --surface-2:       #0F1D35;   /* elevated cards */
+  --surface-hover:   rgba(255,255,255,0.04);
+  --surface-active:  rgba(255,255,255,0.07);
+
+  /* Foreground */
+  --foreground:      #E2E8F0;
+  --foreground-muted: #94A3B8;
+  --foreground-subtle: #475569;
+
+  /* Brand / Accent */
+  --accent-cyan:     #22D3EE;
+  --accent-cyan-dim: rgba(34, 211, 238, 0.15);
+  --accent-blue:     #60A5FA;
+  --accent-blue-dim: rgba(96, 165, 250, 0.12);
+
+  /* Semantic */
+  --success:         #34D399;
+  --success-dim:     rgba(52, 211, 153, 0.12);
+  --warning:         #FBBF24;
+  --warning-dim:     rgba(251, 191, 36, 0.12);
+  --danger:          #FB7185;
+  --danger-dim:      rgba(251, 113, 133, 0.12);
+  --info:            #818CF8;
+  --info-dim:        rgba(129, 140, 248, 0.12);
+
+  /* Country colors */
+  --pais-bo:         #3B82F6;
+  --pais-bo-dim:     rgba(59, 130, 246, 0.15);
+  --pais-pe:         #EF4444;
+  --pais-pe-dim:     rgba(239, 68, 68, 0.15);
+  --pais-cl:         #10B981;
+  --pais-cl-dim:     rgba(16, 185, 129, 0.15);
+
+  /* Borders */
+  --border-subtle:   rgba(255,255,255,0.06);
+  --border-default:  rgba(255,255,255,0.10);
+  --border-strong:   rgba(255,255,255,0.18);
+  --border-focus:    rgba(34, 211, 238, 0.5);
+
+  /* Glows */
+  --glow-cyan:       0 0 40px rgba(34, 211, 238, 0.08);
+  --glow-blue:       0 0 40px rgba(96, 165, 250, 0.08);
+
+  /* Shadows */
+  --shadow-sm:       0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-md:       0 4px 16px rgba(0,0,0,0.4), 0 2px 6px rgba(0,0,0,0.25);
+  --shadow-lg:       0 12px 40px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+  --shadow-panel:    0 20px 60px rgba(0,0,0,0.5), 0 8px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+
+  /* Radii */
+  --radius-sm:       0.375rem;   /* 6px  */
+  --radius-md:       0.625rem;   /* 10px */
+  --radius-lg:       1rem;       /* 16px */
+  --radius-xl:       1.5rem;     /* 24px */
+  --radius-2xl:      2rem;       /* 32px */
+
+  /* Sidebar */
+  --sidebar-width:   300px;
+  --sidebar-bg:      var(--surface-1);
+
+  /* Topbar */
+  --topbar-height:   64px;
+  --topbar-bg:       var(--surface-1);
 }
 
+/* ─── Tailwind theme mapping ─────────────────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background:     var(--canvas);
+  --color-foreground:     var(--foreground);
+  --color-surface-0:      var(--surface-0);
+  --color-surface-1:      var(--surface-1);
+  --color-surface-2:      var(--surface-2);
+
+  --color-primary:        var(--accent-cyan);
+  --color-primary-hover:  var(--accent-blue);
+  --color-primary-light:  var(--accent-cyan-dim);
+
+  --color-border:         var(--border-default);
+  --color-border-subtle:  var(--border-subtle);
+  --color-border-strong:  var(--border-strong);
+
+  --color-danger:         var(--danger);
+  --color-danger-hover:   #f43f5e;
+  --color-danger-light:   var(--danger-dim);
+
+  --color-success:        var(--success);
+  --color-warning:        var(--warning);
+  --color-info:           var(--info);
+
+  --color-pais-bo:        var(--pais-bo);
+  --color-pais-pe:        var(--pais-pe);
+  --color-pais-cl:        var(--pais-cl);
+
+  --font-sans:            var(--font-inter);
+  --font-mono:            var(--font-geist-mono);
+
+  --radius-sm:            var(--radius-sm);
+  --radius-md:            var(--radius-md);
+  --radius-lg:            var(--radius-lg);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ─── Base ───────────────────────────────────────────────────── */
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
+  min-height: 100%;
+  background: var(--canvas);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Subtle diagonal noise texture on the canvas */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(34,211,238,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(96,165,250,0.04) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ─── Scrollbar styling ──────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+/* ─── Utility classes ────────────────────────────────────────── */
+.panel {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.panel-elevated {
+  background: var(--surface-2);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-lg);
+}
+
+.text-muted {
+  color: var(--foreground-muted);
+}
+
+.text-subtle {
+  color: var(--foreground-subtle);
+}
+
+/* ─── Focus ring ─────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Selection ──────────────────────────────────────────────── */
+::selection {
+  background: rgba(34, 211, 238, 0.2);
+  color: #fff;
 }
