@@ -1,5 +1,7 @@
 import { getSession, getAccessiblesPaises, isSuperAdmin } from '@/lib/auth/helpers';
 import { getDbForCountry, getAllDbs } from '@/lib/db';
+import { convertCurrency } from '@/lib/currency/converter';
+import type { Moneda } from '@/types/database';
 
 export async function getDashboardChartsData() {
   const session = await getSession();
@@ -85,4 +87,64 @@ export async function getDashboardChartsData() {
     .slice(0, 5);
 
   return { ventasSemana, topMedicamentos };
+}
+export async function getDashboardMetricsData() {
+  const session = await getSession();
+  if (!session) return { totalVentas: 0, medicamentosConStockBajo: 0, clientesRegistrados: 0, ventasHoy: 0, montoVentasHoy: 0 };
+
+  const paises = getAccessiblesPaises(session);
+  const isSA = isSuperAdmin(session);
+  const dbs = isSA ? getAllDbs() : [{ pais: paises[0], db: getDbForCountry(paises[0]) }];
+
+  let totalVentas = 0;
+  let medicamentosConStockBajo = 0;
+  let clientesRegistrados = 0;
+  let ventasHoy = 0;
+  let montoVentasHoy = 0;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const monedaBase: Moneda = isSA ? 'BOB' : (paises[0] === 'PE' ? 'PEN' : (paises[0] === 'CL' ? 'CLP' : 'BOB'));
+
+  for (const { db } of dbs) {
+    const clientesRes = await db.selectFrom('cliente').select(({ fn }) => fn.count('id_cliente').as('count')).executeTakeFirst();
+    clientesRegistrados += Number(clientesRes?.count || 0);
+
+    const stockRes = await db.selectFrom('stock').whereRef('cantidad_disponible', '<=', 'stock_minimo').select(({ fn }) => fn.count('id_stock').as('count')).executeTakeFirst();
+    medicamentosConStockBajo += Number(stockRes?.count || 0);
+
+    const ventasMesRes = await db.selectFrom('venta')
+      .where('fecha_local', '>=', startOfMonth)
+      .select(['moneda', ({ fn }) => fn.sum('monto_total').as('total')])
+      .groupBy('moneda')
+      .execute();
+    
+    for (const v of ventasMesRes) {
+      if (v.moneda && v.total) {
+        totalVentas += await convertCurrency(Number(v.total), v.moneda as Moneda, monedaBase);
+      }
+    }
+
+    const ventasHoyCountRes = await db.selectFrom('venta')
+      .where('fecha_local', '>=', today)
+      .select(({ fn }) => fn.count('id_venta').as('count'))
+      .executeTakeFirst();
+    ventasHoy += Number(ventasHoyCountRes?.count || 0);
+
+    const ventasHoyRes = await db.selectFrom('venta')
+      .where('fecha_local', '>=', today)
+      .select(['moneda', ({ fn }) => fn.sum('monto_total').as('total')])
+      .groupBy('moneda')
+      .execute();
+
+    for (const v of ventasHoyRes) {
+      if (v.moneda && v.total) {
+        montoVentasHoy += await convertCurrency(Number(v.total), v.moneda as Moneda, monedaBase);
+      }
+    }
+  }
+
+  return { totalVentas, medicamentosConStockBajo, clientesRegistrados, ventasHoy, montoVentasHoy };
 }

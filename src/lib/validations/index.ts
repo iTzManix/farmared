@@ -60,9 +60,10 @@ export const ventaSchema = z.object({
   id_sucursal: z.number().positive(),
   id_empleado: z.number().positive().nullable().optional(),
   id_cliente: z.number().positive().nullable().optional(),
+  id_medicamento: z.number().positive(),
+  cantidad: z.number().int().positive(),
   moneda: MonedaEnum,
   monto_total: z.number().positive(),
-  fecha_local: z.string(),
 });
 
 export type VentaInput = z.infer<typeof ventaSchema>;

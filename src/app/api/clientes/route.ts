@@ -38,11 +38,67 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const parsed = clienteSchema.parse(body);
-    const pais = session.user.pais;
-    if (!pais) return NextResponse.json({ error: 'Sin país' }, { status: 403 });
+    const { fecha_registro, ...parsedData } = parsed;
+    
+    let targetPais = session.user.pais;
+    if (isSuperAdmin(session)) {
+      targetPais = body.pais;
+    }
+    if (!targetPais) return NextResponse.json({ error: 'País no especificado' }, { status: 400 });
 
+    const db = getDbForCountry(targetPais);
+    await db.insertInto('cliente').values({ pais: targetPais, ...parsedData }).executeTakeFirst();
+    return NextResponse.json({ success: true });
+  } catch (e) { return handleApiError(e); }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+
+    const body = await request.json();
+    const { id_cliente, pais, ...data } = body;
+    if (!id_cliente || !pais) return NextResponse.json({ error: 'ID o pas faltante' }, { status: 400 });
+
+    if (!isSuperAdmin(session) && session.user.pais !== pais) {
+      return NextResponse.json({ error: 'No tienes permiso para editar en este nodo' }, { status: 403 });
+    }
+
+    const parsed = clienteSchema.parse(data);
+    const { fecha_registro, ...parsedData } = parsed;
     const db = getDbForCountry(pais);
-    await db.insertInto('cliente').values({ pais, ...parsed }).executeTakeFirst();
+    
+    await db.updateTable('cliente')
+      .set(parsedData)
+      .where('id_cliente', '=', id_cliente)
+      .where('pais', '=', pais)
+      .executeTakeFirst();
+      
+    return NextResponse.json({ success: true });
+  } catch (e) { return handleApiError(e); }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+
+    const { searchParams } = new URL(request.url);
+    const id = parseInt(searchParams.get('id') || '0');
+    const pais = searchParams.get('pais');
+    if (!id || !pais) return NextResponse.json({ error: 'Faltan parmetros' }, { status: 400 });
+
+    if (!isSuperAdmin(session) && session.user.pais !== pais) {
+      return NextResponse.json({ error: 'No tienes permiso para eliminar en este nodo' }, { status: 403 });
+    }
+
+    const db = getDbForCountry(pais as any);
+    await db.deleteFrom('cliente')
+      .where('id_cliente', '=', id)
+      .where('pais', '=', pais as any)
+      .executeTakeFirst();
+
     return NextResponse.json({ success: true });
   } catch (e) { return handleApiError(e); }
 }

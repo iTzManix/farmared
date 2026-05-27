@@ -4,13 +4,14 @@ import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 
 interface EmpleadoData {
+  id_sucursal: number;
   nombre: string;
   apellido: string;
   email: string;
-  telefono: string;
   rol: string;
   pais: string;
 }
@@ -23,14 +24,26 @@ export function EmpleadoForm({
   onSubmit: (data: EmpleadoData) => Promise<void>;
 }) {
   const [form, setForm] = useState<EmpleadoData>({
+    id_sucursal: initial?.id_sucursal ?? 0,
     nombre: initial?.nombre ?? '',
     apellido: initial?.apellido ?? '',
     email: initial?.email ?? '',
-    telefono: initial?.telefono ?? '',
     rol: initial?.rol ?? '',
     pais: initial?.pais ?? '',
   });
+  const { data: session } = useSession();
+  const isSuperAdmin = session?.user?.rol === 'superadmin';
+  const userPais = session?.user?.pais;
   const [loading, setLoading] = useState(false);
+  
+  const [sucursales, setSucursales] = useState<any[]>([]);
+  useEffect(() => {
+    fetch('/api/sucursales?pageSize=100').then(r => r.json()).then(d => {
+      if (d.data) {
+        setSucursales(d.data.filter((s: any) => isSuperAdmin ? true : s.pais === userPais));
+      }
+    }).catch(console.error);
+  }, [isSuperAdmin, userPais]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,11 +58,14 @@ export function EmpleadoForm({
   return (
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-4">
+        <Select label="Sucursal" value={String(form.id_sucursal)} onChange={v => setForm(s => ({ ...s, id_sucursal: Number(v) }))} options={sucursales.map(s => ({ value: String(s.id_sucursal), label: `${s.nombre} (${s.ciudad})` }))} />
         <Input label="Nombre" value={form.nombre} onChange={e => setForm(s => ({ ...s, nombre: e.target.value }))} required />
         <Input label="Apellido" value={form.apellido} onChange={e => setForm(s => ({ ...s, apellido: e.target.value }))} required />
         <Input label="Email" type="email" value={form.email} onChange={e => setForm(s => ({ ...s, email: e.target.value }))} required />
-        <Input label="Teléfono" value={form.telefono} onChange={e => setForm(s => ({ ...s, telefono: e.target.value }))} />
         <Select label="Rol" value={form.rol} onChange={v => setForm(s => ({ ...s, rol: v }))} options={[{value:'Administrador',label:'Administrador'},{value:'Vendedor',label:'Vendedor'},{value:'Farmacéutico',label:'Farmacéutico'},{value:'Almacenero',label:'Almacenero'}]} />
+        {isSuperAdmin && (
+          <Select label="País Destino" value={form.pais} onChange={v => setForm(s => ({ ...s, pais: v }))} options={[{value:'BO',label:'Bolivia'},{value:'PE',label:'Perú'},{value:'CL',label:'Chile'}]} />
+        )}
         <div className="flex justify-end gap-2 pt-4">
           <Button type="submit" disabled={loading}>
             {loading ? 'Guardando...' : initial ? 'Actualizar' : 'Crear'}

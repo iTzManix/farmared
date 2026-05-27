@@ -12,7 +12,7 @@ export interface SucursalTable {
   ciudad: string;
   direccion: string | null;
   motor_bd: MotorBD;
-  activo: boolean;
+  activo: Generated<boolean>;
 }
 
 export interface MedicamentoTable {
@@ -34,8 +34,8 @@ export interface EmpleadoTable {
   apellido: string;
   rol: string | null;
   email: string | null;
-  fecha_ingreso: Date | null;
-  activo: boolean;
+  fecha_ingreso: Generated<Date | null>;
+  activo: Generated<boolean>;
 }
 
 export interface ClienteTable {
@@ -48,7 +48,7 @@ export interface ClienteTable {
   email: string | null;
   direccion: string | null;
   ciudad: string | null;
-  fecha_registro: Date;
+  fecha_registro: Generated<Date>;
 }
 
 export interface StockTable {
@@ -67,11 +67,13 @@ export interface VentaTable {
   id_sucursal: number;
   id_empleado: number | null;
   id_cliente: number | null;
+  id_medicamento: number;
+  cantidad: number;
   pais: Pais;
   moneda: Moneda;
   monto_total: number;
-  fecha_local: Date;
-  fecha_utc: Date;
+  fecha_local: Generated<Date>;
+  fecha_utc: Generated<Date>;
 }
 
 export interface DetalleVentaTable {
@@ -91,8 +93,8 @@ export interface UsuarioTable {
   nombre: string;
   rol: RolUsuario;
   pais: Pais | null;
-  activo: boolean;
-  fecha_creacion: Date;
+  activo: Generated<boolean>;
+  fecha_creacion: Generated<Date>;
 }
 
 export interface TasaCambioTable {
@@ -100,7 +102,7 @@ export interface TasaCambioTable {
   moneda_origen: Moneda;
   moneda_destino: Moneda;
   tasa: number;
-  fecha_actualizacion: Date;
+  fecha_actualizacion: Generated<Date>;
 }
 
 export interface FarmaredDB {

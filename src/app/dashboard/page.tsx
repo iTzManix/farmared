@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { DashboardMetricsClient } from './DashboardMetricsClient';
 import { DashboardChartsClient } from './DashboardChartsClient';
-import { getDashboardChartsData } from './actions';
+import { getDashboardChartsData, getDashboardMetricsData } from './actions';
 
 const quickLinks = [
   { name: 'Medicamentos', href: '/dashboard/medicamentos', desc: 'Catálogo y gestión de fármacos', icon: FlaskConical },
@@ -41,6 +41,7 @@ export default async function DashboardPage() {
   const nodoLabel = pais ? paisName[pais] : 'Global';
 
   const chartsData = await getDashboardChartsData();
+  const metricsData = await getDashboardMetricsData();
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('es-ES', {
@@ -98,12 +99,12 @@ export default async function DashboardPage() {
         </div>
         <DashboardMetricsClient
           initialData={{
-            totalVentas: 0,
+            totalVentas: metricsData.totalVentas,
             monedaBase: pais === 'PE' ? 'PEN' : pais === 'CL' ? 'CLP' : 'BOB',
-            medicamentosConStockBajo: 0,
-            clientesRegistrados: 0,
-            ventasHoy: 0,
-            montoVentasHoy: 0,
+            medicamentosConStockBajo: metricsData.medicamentosConStockBajo,
+            clientesRegistrados: metricsData.clientesRegistrados,
+            ventasHoy: metricsData.ventasHoy,
+            montoVentasHoy: metricsData.montoVentasHoy,
           }}
         />
       </section>

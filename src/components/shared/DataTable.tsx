@@ -34,6 +34,7 @@ export interface DataTableProps<T> {
   isLoading?: boolean;
   itemsPerPage?: number;
   showSearch?: boolean;
+  rowKey?: (row: T) => string;
 }
 
 export function DataTable<T>({
@@ -46,6 +47,7 @@ export function DataTable<T>({
   isLoading = false,
   itemsPerPage = 10,
   showSearch = true,
+  rowKey,
 }: DataTableProps<T>) {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -151,7 +153,7 @@ export function DataTable<T>({
             ) : (
               paginatedData.map((row, idx) => (
                 <TableRow
-                  key={idx}
+                  key={rowKey ? rowKey(row) : idx}
                   className={cn(onRowClick && 'cursor-pointer')}
                   onClick={() => onRowClick?.(row)}
                 >

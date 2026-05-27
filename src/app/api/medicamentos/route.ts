@@ -74,16 +74,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const parsed = medicamentoSchema.parse(body);
 
-    const pais = session.user.pais;
-    if (!pais) {
-      return NextResponse.json({ error: 'No tiene país asignado' }, { status: 403 });
+    let targetPais = session.user.pais;
+    if (isSuperAdmin(session)) {
+      targetPais = body.pais;
     }
+    if (!targetPais) return NextResponse.json({ error: 'País no especificado' }, { status: 400 });
 
-    const db = getDbForCountry(pais);
+    const db = getDbForCountry(targetPais);
     const result = await db
       .insertInto('medicamento')
       .values({
-        pais,
+        pais: targetPais,
         nombre: parsed.nombre,
         principio_activo: parsed.principio_activo ?? null,
         presentacion: parsed.presentacion ?? null,
@@ -97,4 +98,52 @@ export async function POST(request: NextRequest) {
   } catch (e) {
     return handleApiError(e);
   }
+}export async function PUT(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+
+    const body = await request.json();
+    const { id_medicamento, pais, ...data } = body;
+    if (!id_medicamento || !pais) return NextResponse.json({ error: 'ID o pas faltante' }, { status: 400 });
+
+    if (!isSuperAdmin(session) && session.user.pais !== pais) {
+      return NextResponse.json({ error: 'No tienes permiso para editar en este nodo' }, { status: 403 });
+    }
+
+    const parsed = medicamentoSchema.parse(data);
+    const db = getDbForCountry(pais);
+    
+    await db.updateTable('medicamento')
+      .set(parsed)
+      .where('id_medicamento', '=', id_medicamento)
+      .where('pais', '=', pais)
+      .executeTakeFirst();
+      
+    return NextResponse.json({ success: true });
+  } catch (e) { return handleApiError(e); }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
+
+    const { searchParams } = new URL(request.url);
+    const id = parseInt(searchParams.get('id') || '0');
+    const pais = searchParams.get('pais');
+    if (!id || !pais) return NextResponse.json({ error: 'Faltan parmetros' }, { status: 400 });
+
+    if (!isSuperAdmin(session) && session.user.pais !== pais) {
+      return NextResponse.json({ error: 'No tienes permiso para eliminar en este nodo' }, { status: 403 });
+    }
+
+    const db = getDbForCountry(pais as any);
+    await db.deleteFrom('medicamento')
+      .where('id_medicamento', '=', id)
+      .where('pais', '=', pais as any)
+      .executeTakeFirst();
+
+    return NextResponse.json({ success: true });
+  } catch (e) { return handleApiError(e); }
 }
