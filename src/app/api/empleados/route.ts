@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (isSuperAdmin(session)) {
       const results = await Promise.all(getAllDbs().map(({ pais, db }) =>
         db.selectFrom('empleado').selectAll().where('pais', '=', pais)
-          .limit(pageSize).offset((page - 1) * pageSize).execute()
+          .orderBy('id_empleado', 'desc').limit(pageSize).offset((page - 1) * pageSize).execute()
       ));
       return NextResponse.json({ data: results.flat(), page, pageSize });
     }
@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     const db = getDbForCountry(paises[0]);
     const data = await db.selectFrom('empleado').selectAll()
       .where('pais', '=', paises[0])
+      .orderBy('id_empleado', 'desc')
       .limit(pageSize).offset((page - 1) * pageSize).execute();
     return NextResponse.json({ data, page, pageSize });
   } catch (e) { return handleApiError(e); }

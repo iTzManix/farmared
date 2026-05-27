@@ -25,6 +25,7 @@ export async function GET(request: NextRequest) {
             .selectFrom('medicamento')
             .selectAll()
             .where('pais', '=', pais)
+            .orderBy('id_medicamento', 'desc')
             .limit(pageSize)
             .offset((page - 1) * pageSize)
             .execute();
@@ -46,6 +47,7 @@ export async function GET(request: NextRequest) {
       .selectFrom('medicamento')
       .selectAll()
       .where('pais', '=', paisesAccesibles[0])
+      .orderBy('id_medicamento', 'desc')
       .limit(pageSize)
       .offset((page - 1) * pageSize);
 

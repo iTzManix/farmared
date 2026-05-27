@@ -5,23 +5,12 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-const ventasSemana = [
-  { dia: 'Lun', ventas: 12 },
-  { dia: 'Mar', ventas: 19 },
-  { dia: 'Mié', ventas: 15 },
-  { dia: 'Jue', ventas: 22 },
-  { dia: 'Vie', ventas: 30 },
-  { dia: 'Sáb', ventas: 18 },
-  { dia: 'Dom', ventas: 8 },
-];
-
-const topMedicamentos = [
-  { nombre: 'Amoxicilina',  cantidad: 45 },
-  { nombre: 'Ibuprofeno',   cantidad: 38 },
-  { nombre: 'Paracetamol',  cantidad: 32 },
-  { nombre: 'Omeprazol',    cantidad: 28 },
-  { nombre: 'Losartán',     cantidad: 21 },
-];
+interface DashboardChartsClientProps {
+  initialData: {
+    ventasSemana: { dia: string; ventas: number }[];
+    topMedicamentos: { nombre: string; cantidad: number }[];
+  };
+}
 
 // Charts need inline styles for SVG elements — this is one of the valid exceptions
 const tooltipContentStyle = {
@@ -34,7 +23,10 @@ const tooltipContentStyle = {
   padding: '8px 12px',
 };
 
-export function DashboardChartsClient() {
+export function DashboardChartsClient({ initialData }: DashboardChartsClientProps) {
+  const ventasSemana = initialData.ventasSemana;
+  const topMedicamentos = initialData.topMedicamentos;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 

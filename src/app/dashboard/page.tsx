@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { DashboardMetricsClient } from './DashboardMetricsClient';
 import { DashboardChartsClient } from './DashboardChartsClient';
+import { getDashboardChartsData } from './actions';
 
 const quickLinks = [
   { name: 'Medicamentos', href: '/dashboard/medicamentos', desc: 'Catálogo y gestión de fármacos', icon: FlaskConical },
@@ -38,6 +39,8 @@ export default async function DashboardPage() {
   const isSA = session.user.rol === 'superadmin';
   const pais = session.user.pais;
   const nodoLabel = pais ? paisName[pais] : 'Global';
+
+  const chartsData = await getDashboardChartsData();
 
   const now = new Date();
   const dateStr = now.toLocaleDateString('es-ES', {
@@ -113,7 +116,7 @@ export default async function DashboardPage() {
           </h2>
           <span className="text-xs text-slate-400">Últimos 7 días</span>
         </div>
-        <DashboardChartsClient />
+        <DashboardChartsClient initialData={chartsData} />
       </section>
 
       {/* ─── Modules Grid ─── */}
