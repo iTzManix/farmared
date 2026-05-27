@@ -40,10 +40,14 @@ export function EmpleadoForm({
   useEffect(() => {
     fetch('/api/sucursales?pageSize=100').then(r => r.json()).then(d => {
       if (d.data) {
-        setSucursales(d.data.filter((s: any) => isSuperAdmin ? true : s.pais === userPais));
+        const arr = d.data.filter((s: any) => isSuperAdmin ? true : s.pais === userPais);
+        setSucursales(arr);
+        if (arr.length > 0 && !initial?.id_sucursal) {
+          setForm(s => ({ ...s, id_sucursal: arr[0].id_sucursal }));
+        }
       }
     }).catch(console.error);
-  }, [isSuperAdmin, userPais]);
+  }, [isSuperAdmin, userPais, initial]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -42,16 +42,28 @@ export function StockForm({
   useEffect(() => {
     fetch('/api/sucursales?pageSize=100').then(r => r.json()).then(d => {
       if (d.data) {
-        setSucursales(d.data.filter((s: any) => isSuperAdmin ? true : s.pais === userPais));
+        const arr = d.data.filter((s: any) => isSuperAdmin ? true : s.pais === userPais);
+        setSucursales(arr);
+        if (arr.length > 0 && !initial?.id_sucursal) {
+          setForm(s => ({ ...s, id_sucursal: arr[0].id_sucursal }));
+        }
       }
     }).catch(console.error);
 
     fetch('/api/medicamentos?pageSize=100').then(r => r.json()).then(d => {
       if (d.data) {
-        setMedicamentos(d.data.filter((m: any) => isSuperAdmin ? true : m.pais === userPais));
+        const arr = d.data.filter((m: any) => isSuperAdmin ? true : m.pais === userPais);
+        setMedicamentos(arr);
+        if (arr.length > 0 && !initial?.id_medicamento) {
+          setForm(s => ({ ...s, id_medicamento: arr[0].id_medicamento }));
+        }
       }
     }).catch(console.error);
-  }, [isSuperAdmin, userPais]);
+    
+    if (!initial?.moneda) {
+      setForm(s => ({ ...s, moneda: userPais === 'CL' ? 'CLP' : userPais === 'PE' ? 'PEN' : 'BOB' }));
+    }
+  }, [isSuperAdmin, userPais, initial]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
