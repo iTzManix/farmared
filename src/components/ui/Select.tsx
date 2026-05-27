@@ -2,6 +2,7 @@
 
 import { SelectHTMLAttributes, forwardRef } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface SelectOption {
   value: string;
@@ -17,16 +18,15 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
 }
 
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, placeholder = 'Selecciona...', onChange, className = '', value, id, ...props }, ref) => {
+  ({ label, error, options, placeholder = 'Selecciona...', onChange, className, value, id, ...props }, ref) => {
     const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
-      <div className="w-full flex flex-col gap-1.5">
+      <div className="flex w-full flex-col gap-1.5">
         {label && (
           <label
             htmlFor={selectId}
-            className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: 'var(--foreground-muted)' }}
+            className="text-xs font-semibold uppercase tracking-wider text-slate-500"
           >
             {label}
           </label>
@@ -37,43 +37,29 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
             id={selectId}
             value={value || ''}
             onChange={(e) => onChange?.(e.target.value)}
-            className={`w-full h-11 px-4 pr-10 rounded-xl text-sm appearance-none transition-all ${className}`}
-            style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: 'none',
-              color: 'var(--foreground)',
-              outline: 'none',
-              cursor: 'pointer',
-              boxShadow: error ? '0 0 0 1px rgba(251,113,133,0.5)' : 'none',
-            }}
-            onFocus={(e) => {
-              if (!error) {
-                e.target.style.boxShadow = '0 0 0 1px rgba(34,211,238,0.3), 0 0 0 3px rgba(34,211,238,0.04)';
-              }
-            }}
-            onBlur={(e) => {
-              e.target.style.boxShadow = error ? '0 0 0 1px rgba(251,113,133,0.5)' : 'none';
-            }}
+            className={cn(
+              'h-10 w-full cursor-pointer appearance-none rounded-lg border bg-white px-3 pr-10 text-sm text-slate-900 transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary',
+              error
+                ? 'border-red-300 focus-visible:ring-red-200 focus-visible:border-red-400'
+                : 'border-slate-200 hover:border-slate-300',
+              className
+            )}
             {...props}
           >
-            <option value="" disabled style={{ background: '#070E1C' }}>
+            <option value="" disabled>
               {placeholder}
             </option>
             {options.map((opt) => (
-              <option key={opt.value} value={opt.value} style={{ background: '#070E1C' }}>
+              <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
             ))}
           </select>
-          <ChevronDown
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-            style={{ color: 'var(--foreground-subtle)' }}
-          />
+          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
         </div>
         {error && (
-          <p className="text-xs" style={{ color: 'var(--danger)' }}>
-            {error}
-          </p>
+          <p className="text-xs text-danger">{error}</p>
         )}
       </div>
     );

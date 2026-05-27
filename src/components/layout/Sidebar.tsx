@@ -16,10 +16,12 @@ import {
   Settings,
   LogOut,
   ChevronRight,
+  Zap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { Session } from 'next-auth';
 import type { RolUsuario, Pais } from '@/types/database';
+import { cn } from '@/lib/utils';
 
 interface SidebarSession extends Session {
   user: {
@@ -38,7 +40,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { name: 'Dashboard',     href: '/dashboard',             icon: Home },
+  { name: 'Dashboard',     href: '/dashboard',              icon: Home },
   { name: 'Medicamentos',  href: '/dashboard/medicamentos', icon: FlaskConical },
   { name: 'Empleados',     href: '/dashboard/empleados',    icon: Users },
   { name: 'Clientes',      href: '/dashboard/clientes',     icon: ShoppingBag },
@@ -48,16 +50,10 @@ const navItems: NavItem[] = [
 ];
 
 const superAdminNavItems: NavItem[] = [
-  { name: 'Reportes Globales', href: '/dashboard/reportes',       icon: BarChart3 },
-  { name: 'Tasas de Cambio',   href: '/dashboard/tasas-cambio',   icon: DollarSign },
-  { name: 'Configuración',     href: '/dashboard/configuracion',  icon: Settings },
+  { name: 'Reportes Globales', href: '/dashboard/reportes',      icon: BarChart3 },
+  { name: 'Tasas de Cambio',   href: '/dashboard/tasas-cambio',  icon: DollarSign },
+  { name: 'Configuración',     href: '/dashboard/configuracion', icon: Settings },
 ];
-
-const paisMeta: Record<string, { label: string; dot: string }> = {
-  BO: { label: 'Bolivia',  dot: 'bg-blue-500' },
-  PE: { label: 'Perú',     dot: 'bg-orange-500' },
-  CL: { label: 'Chile',    dot: 'bg-emerald-500' },
-};
 
 interface SidebarProps {
   session: SidebarSession;
@@ -72,7 +68,6 @@ export function Sidebar({ session }: SidebarProps) {
     return pathname.startsWith(href);
   };
 
-  const paisInfo = session.user.pais ? paisMeta[session.user.pais] : null;
   const initials = session.user.nombre
     .split(' ')
     .slice(0, 2)
@@ -81,87 +76,88 @@ export function Sidebar({ session }: SidebarProps) {
     .toUpperCase();
 
   return (
-    <aside
-      className="hidden lg:flex flex-col flex-shrink-0 overflow-hidden"
-      style={{
-        width: 'var(--sidebar-width)',
-        margin: '24px',
-        background: 'var(--surface-0)',
-        borderRadius: 'var(--radius-2xl)',
-        boxShadow: 'var(--shadow-lg)',
-      }}
-    >
-      {/* ─── Brand ───────────────────────────────────────── */}
-      <div className="flex items-center gap-4 px-6 pt-8 pb-6">
-        <div
-          className="w-10 h-10 flex items-center justify-center flex-shrink-0"
-          style={{
-            background: 'var(--primary)',
-            borderRadius: 'var(--radius-lg)',
-          }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-          </svg>
-        </div>
+    <aside className="hidden lg:flex flex-col flex-shrink-0 w-[260px] m-4 mr-0 rounded-2xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
 
-        <div>
-          <div className="text-lg font-bold text-foreground tracking-tight">
-            FARMARED
+      {/* ─── Brand ─── */}
+      <div className="px-5 pt-6 pb-5 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-primary/10">
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.75} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
           </div>
-          <div className="text-sm text-muted">
-            Red de Farmacias
+          <div>
+            <div className="text-sm font-bold text-slate-900 tracking-tight">FARMARED</div>
+            <div className="text-[11px] text-slate-400 font-medium">Red de Farmacias</div>
           </div>
         </div>
       </div>
 
-      {/* ─── Navigation ──────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto px-3" style={{ scrollbarWidth: 'none' }}>
+      {/* ─── Divider ─── */}
+      <div className="h-px bg-slate-100 mx-5" />
 
-        <div className="space-y-2">
-          {navItems.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                  ${active ? 'bg-primary/10 text-primary' : 'text-muted hover:bg-muted/50'}`}
-              >
-                <item.icon
-                  className="w-[18px] h-[18px] flex-shrink-0 transition-colors"
-                  style={active ? { color: 'var(--primary)' } : { color: 'var(--foreground-muted)' }}
-                />
-                <span className="truncate">{item.name}</span>
-                {active && (
-                  <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-40 text-primary" />
-                )}
-              </Link>
-            );
-          })}
+      {/* ─── Navigation ─── */}
+      <nav className="flex-1 overflow-y-auto px-3 py-4 scrollbar-none">
+
+        {/* Main */}
+        <div className="mb-6">
+          <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+            Principal
+          </p>
+          <div className="space-y-0.5">
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                    active
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                  )}
+                >
+                  <item.icon className={cn(
+                    'w-[18px] h-[18px] flex-shrink-0 transition-colors',
+                    active ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'
+                  )} />
+                  <span className="truncate">{item.name}</span>
+                  {active && (
+                    <ChevronRight className="w-3.5 h-3.5 ml-auto text-primary/50" />
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* Super Admin */}
         {isSuperAdmin && (
-          <div className="mt-8 pt-8 border-t border-muted">
-            <div className="space-y-2">
+          <div>
+            <div className="h-px bg-slate-100 mx-3 mb-4" />
+            <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-400">
+              Administración
+            </p>
+            <div className="space-y-0.5">
               {superAdminNavItems.map((item) => {
                 const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                      ${active ? 'bg-primary/10 text-primary' : 'text-muted hover:bg-muted/50'}`}
-                  >
-                    <item.icon
-                      className="w-[18px] h-[18px] flex-shrink-0 transition-colors"
-                      style={active ? { color: 'var(--primary)' } : { color: 'var(--foreground-muted)' }}
-                    />
-                    <span className="truncate">{item.name}</span>
-                    {active && (
-                      <ChevronRight className="w-3.5 h-3.5 ml-auto opacity-40 text-primary" />
+                    className={cn(
+                      'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                      active
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     )}
+                  >
+                    <item.icon className={cn(
+                      'w-[18px] h-[18px] flex-shrink-0 transition-colors',
+                      active ? 'text-primary' : 'text-slate-400 group-hover:text-slate-600'
+                    )} />
+                    <span className="truncate">{item.name}</span>
                   </Link>
                 );
               })}
@@ -170,59 +166,39 @@ export function Sidebar({ session }: SidebarProps) {
         )}
       </nav>
 
-      {/* ─── Bottom — user info ───────────────────────────── */}
-      <div className="flex-shrink-0 px-3 pb-5 pt-4 border-t border-muted">
-        <div
-          className="flex items-center gap-3 px-4 py-3.5 rounded-xl"
-          style={{
-            background: 'var(--surface-1)',
-          }}
-        >
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-sm font-bold text-foreground"
-            style={{
-              background: 'var(--primary)',
-            }}
-          >
+      {/* ─── User info ─── */}
+      <div className="flex-shrink-0 px-3 pb-4 pt-2">
+        <div className="h-px bg-slate-100 mx-2 mb-3" />
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-50 border border-slate-100">
+          {/* Avatar */}
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 text-xs font-bold bg-primary/10 text-primary">
             {initials}
           </div>
 
+          {/* Name + role */}
           <div className="min-w-0 flex-1">
-            <p className="text-base font-semibold text-foreground truncate leading-tight">
+            <p className="text-[13px] font-semibold text-slate-900 truncate leading-tight">
               {session.user.nombre}
             </p>
-            <div className="flex items-center gap-1.5 mt-1">
+            <div className="flex items-center gap-1.5 mt-0.5">
               {isSuperAdmin ? (
-                <span
-                  className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md"
-                  style={{ background: 'var(--success)/10', color: 'var(--success)' }}
-                >
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">
+                  <Zap className="w-2.5 h-2.5" />
                   Super Admin
                 </span>
-              ) : paisInfo ? (
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold" style={{ color: 'var(--foreground-muted)' }}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${paisInfo.dot}`} />
-                  {paisInfo.label}
-                </span>
               ) : (
-                <span className="text-[10px]" style={{ color: 'var(--foreground-subtle)' }}>Admin</span>
+                <span className="text-[10px] text-slate-400 font-medium">
+                  Admin · {session.user.pais || 'N/A'}
+                </span>
               )}
             </div>
           </div>
 
+          {/* Logout */}
           <button
             onClick={() => signOut({ callbackUrl: '/login' })}
-            className="p-2 rounded-xl transition-all duration-200 flex-shrink-0"
-            style={{ color: 'var(--foreground-muted)' }}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors flex-shrink-0"
             title="Cerrar sesión"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = '#fb7185';
-              (e.currentTarget as HTMLElement).style.background = 'rgba(251,113,133,0.08)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = 'var(--foreground-muted)';
-              (e.currentTarget as HTMLElement).style.background = 'transparent';
-            }}
           >
             <LogOut className="w-4 h-4" />
           </button>

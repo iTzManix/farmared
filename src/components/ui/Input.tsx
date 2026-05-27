@@ -1,6 +1,7 @@
 'use client';
 
 import { InputHTMLAttributes, forwardRef } from 'react';
+import { cn } from '@/lib/utils';
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -9,16 +10,15 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, hint, className = '', id, ...props }, ref) => {
+  ({ label, error, hint, className, id, ...props }, ref) => {
     const inputId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
-      <div className="w-full flex flex-col gap-1.5">
+      <div className="flex w-full flex-col gap-1.5">
         {label && (
           <label
             htmlFor={inputId}
-            className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: 'var(--foreground-muted)' }}
+            className="text-xs font-semibold uppercase tracking-wider text-slate-500"
           >
             {label}
           </label>
@@ -26,39 +26,22 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          className={`w-full h-11 px-4 rounded-xl text-sm transition-all ${className}`}
-          style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: 'none',
-            color: 'var(--foreground)',
-            outline: 'none',
-            boxShadow: error ? '0 0 0 1px rgba(251,113,133,0.5)' : 'none',
-          }}
-          onFocus={(e) => {
-            const el = e.target as HTMLInputElement;
-            if (error) {
-              el.style.boxShadow = '0 0 0 1px rgba(251,113,133,0.8), 0 0 0 3px rgba(251,113,133,0.06)';
-            } else {
-              el.style.background = 'rgba(255,255,255,0.05)';
-              el.style.boxShadow = '0 0 0 1px rgba(34,211,238,0.3), 0 0 0 3px rgba(34,211,238,0.04)';
-            }
-          }}
-          onBlur={(e) => {
-            const el = e.target as HTMLInputElement;
-            el.style.background = 'rgba(255,255,255,0.03)';
-            el.style.boxShadow = error ? '0 0 0 1px rgba(251,113,133,0.5)' : 'none';
-          }}
+          className={cn(
+            'h-10 w-full rounded-lg border bg-white px-3 text-sm text-slate-900 transition-colors',
+            'placeholder:text-slate-400',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary',
+            error
+              ? 'border-red-300 focus-visible:ring-red-200 focus-visible:border-red-400'
+              : 'border-slate-200 hover:border-slate-300',
+            className
+          )}
           {...props}
         />
         {error && (
-          <p className="text-xs" style={{ color: 'var(--danger)' }}>
-            {error}
-          </p>
+          <p className="text-xs text-danger">{error}</p>
         )}
         {hint && !error && (
-          <p className="text-xs" style={{ color: 'var(--foreground-subtle)' }}>
-            {hint}
-          </p>
+          <p className="text-xs text-slate-400">{hint}</p>
         )}
       </div>
     );

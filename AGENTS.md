@@ -144,4 +144,4 @@ npm run lint
 - **Database**: Kysely Query Builder
   - SQL Server: tedious + tarn
   - PostgreSQL: pg
-- **UI**: TailwindCSS v4, Lucide React (Icons), Floating Panel UI System
+- **UI**: TailwindCSS v4, Lucide React (Icons), shadcn-like pattern (clsx, tailwind-merge, cva)

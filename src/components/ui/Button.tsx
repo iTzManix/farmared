@@ -1,10 +1,50 @@
 'use client';
 
 import { ButtonHTMLAttributes, forwardRef } from 'react';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
+const buttonVariants = cva(
+  'inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  {
+    variants: {
+      variant: {
+        default:
+          'bg-primary text-white hover:bg-sky-600 shadow-sm',
+        secondary:
+          'bg-slate-100 text-slate-700 hover:bg-slate-200',
+        outline:
+          'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900',
+        ghost:
+          'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+        danger:
+          'bg-danger text-white hover:bg-red-600 shadow-sm',
+      },
+      size: {
+        sm: 'h-9 px-3 text-xs',
+        md: 'h-10 px-4',
+        lg: 'h-11 px-6 text-base',
+        icon: 'h-10 w-10',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'md',
+    },
+  }
+);
+
+// Keep backward compat: map old "primary"→"default", "destructive"→"danger"
+type LegacyVariant = 'primary' | 'destructive';
+const variantAliases: Record<LegacyVariant, 'default' | 'danger'> = {
+  primary: 'default',
+  destructive: 'danger',
+};
+
+export interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'destructive';
+  size?: 'sm' | 'md' | 'lg' | 'icon';
   asChild?: boolean;
   isLoading?: boolean;
 }
@@ -13,46 +53,51 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       children,
-      variant = 'primary',
-      size = 'default',
+      variant = 'default',
+      size = 'md',
       asChild = false,
-      className = '',
+      className,
       isLoading = false,
+      disabled,
       ...props
     },
     ref
   ) => {
-    // Default to button if not asChild
     const Component = asChild ? 'span' : 'button';
 
-    const base = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
-
-    const sizeVariants = {
-      default: 'h-10 px-4',
-      sm: 'h-9 px-3',
-      lg: 'h-11 px-6',
-      icon: 'h-10 w-10',
-    };
-
-    const variantVariants: Record<string, string> = {
-      primary: `bg-primary text-primary-foreground hover:bg-primary/90`,
-      secondary: `bg-secondary text-secondary-foreground hover:bg-secondary/80`,
-      destructive: `bg-destructive text-destructive-foreground hover:bg-destructive/90`,
-      outline: `border border-input hover:bg-accent hover:text-accent-foreground`,
-      ghost: `hover:bg-accent hover:text-accent-foreground`,
-    };
+    // Resolve aliases for backward compat
+    const resolvedVariant =
+      variant in variantAliases
+        ? variantAliases[variant as LegacyVariant]
+        : (variant as Exclude<typeof variant, LegacyVariant>);
 
     return (
       <Component
         ref={ref}
-        className={`${base} ${sizeVariants[size]} ${variantVariants[variant]} ${className}`}
+        className={cn(buttonVariants({ variant: resolvedVariant, size }), className)}
+        disabled={isLoading || disabled}
         {...props}
-        disabled={isLoading}
       >
         {isLoading ? (
-          <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          <svg
+            className="animate-spin -ml-1 mr-2 h-4 w-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            />
           </svg>
         ) : null}
         {children}
@@ -63,4 +108,4 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = 'Button';
 
-export { Button };
+export { Button, buttonVariants };

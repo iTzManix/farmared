@@ -1,18 +1,15 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Menu,
   Activity,
-  Search,
   Bell,
-  ChevronDown,
-  Check,
 } from 'lucide-react';
 import { useCurrency } from '@/lib/contexts/CurrencyContext';
 import type { Pais } from '@/types/database';
-import type { Moneda } from '@/types/database';
+import { cn } from '@/lib/utils';
 
 interface NodeStatus {
   pais: Pais;
@@ -25,20 +22,26 @@ interface HeaderProps {
   onMobileMenuClick?: () => void;
 }
 
-const currencyOptions: { value: Moneda; label: string; symbol: string; flag: string }[] = [
-  { value: 'BOB', label: 'Bolivianos',  symbol: 'Bs',  flag: '🇧🇴' },
-  { value: 'PEN', label: 'Soles',       symbol: 'S/',   flag: '🇵🇪' },
-  { value: 'CLP', label: 'Pesos CLP',  symbol: 'CL$',  flag: '🇨🇱' },
-];
+const breadcrumbMap: Record<string, { label: string }> = {
+  '/dashboard': { label: 'Dashboard' },
+  '/dashboard/medicamentos': { label: 'Medicamentos' },
+  '/dashboard/empleados': { label: 'Empleados' },
+  '/dashboard/clientes': { label: 'Clientes' },
+  '/dashboard/stock': { label: 'Stock' },
+  '/dashboard/ventas': { label: 'Ventas' },
+  '/dashboard/sucursales': { label: 'Sucursales' },
+  '/dashboard/reportes': { label: 'Reportes' },
+  '/dashboard/tasas-cambio': { label: 'Tasas de Cambio' },
+  '/dashboard/configuracion': { label: 'Configuración' },
+};
 
+const currencyFlags: Record<string, string> = { BOB: '🇧🇴', PEN: '🇵🇪', CLP: '🇨🇱' };
 const nodePais: Record<Pais, string> = { BO: 'BOL', PE: 'PER', CL: 'CHI' };
 
 export function Header({ onMobileMenuClick }: HeaderProps) {
   const pathname = usePathname();
   const { selectedCurrency, setSelectedCurrency, availableCurrencies } = useCurrency();
   const [nodeStatuses, setNodeStatuses] = useState<NodeStatus[] | null>(null);
-  const [currencyOpen, setCurrencyOpen] = useState(false);
-  const currencyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchHealth() {
@@ -51,193 +54,101 @@ export function Header({ onMobileMenuClick }: HeaderProps) {
           ...status,
         }));
         setNodeStatuses(array);
-      } catch { /* fallback */ }
+      } catch {
+        // Silent fail
+      }
     }
     fetchHealth();
   }, []);
 
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (currencyRef.current && !currencyRef.current.contains(e.target as Node)) {
-        setCurrencyOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const activeCurrency = currencyOptions.find((c) => c.value === selectedCurrency);
+  const page = breadcrumbMap[pathname] || { label: 'Dashboard' };
+  const isHome = pathname === '/dashboard';
 
   return (
-    <header
-      className="flex items-center gap-6 px-8"
-      style={{
-        height: 'var(--topbar-height)',
-        background: 'var(--surface-0)',
-      }}
-    >
-      {/* ─── Left: mobile menu ─── */}
-      <div className="flex items-center gap-4 flex-shrink-0">
-        <button
-          onClick={onMobileMenuClick}
-          className="lg:hidden p-2 rounded-xl"
-          style={{ color: 'var(--foreground-muted)' }}
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-      </div>
+    <header className="flex-shrink-0 px-4 pt-4">
+      <div className="flex items-center justify-between gap-4 h-14 px-5 rounded-xl border border-slate-200/80 bg-white/80 backdrop-blur-xl shadow-sm">
 
-      {/* ─── Center: search ─── */}
-      <div className="flex-1 hidden lg:flex justify-center">
-        <div className="relative w-full max-w-lg">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-            style={{ color: 'var(--foreground-subtle)' }}
-          />
-          <input
-            placeholder="Buscar en Farmared..."
-            className="w-full h-11 pl-11 pr-4 text-sm rounded-xl transition-all"
-            style={{
-              background: 'var(--surface-1)',
-              border: '1px solid var(--border)',
-              color: 'var(--foreground)',
-              outline: 'none',
-            }}
-            onFocus={(e) => {
-              (e.target as HTMLInputElement).style.borderColor = 'var(--primary)';
-              (e.target as HTMLInputElement).style.boxShadow = '0 0 0 2px rgba(14, 165, 233, 0.2)';
-            }}
-            onBlur={(e) => {
-              (e.target as HTMLInputElement).style.borderColor = 'var(--border)';
-              (e.target as HTMLInputElement).style.boxShadow = 'none';
-            }}
-          />
-        </div>
-      </div>
-
-      {/* ─── Right: currency + nodes + actions ─── */}
-      <div className="flex items-center gap-3 flex-shrink-0">
-
-        {/* Premium Currency Switcher */}
-        <div className="hidden md:block relative" ref={currencyRef}>
-          <button
-            onClick={() => setCurrencyOpen(!currencyOpen)}
-            className="flex items-center gap-2.5 h-11 px-4 rounded-xl transition-all"
-            style={{
-              background: currencyOpen ? 'var(--surface-1)' : 'var(--surface-0)',
-              color: 'var(--foreground)',
-              border: '1px solid var(--border)',
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'var(--surface-1)'; }}
-            onMouseLeave={(e) => { if (!currencyOpen) (e.currentTarget as HTMLElement).style.background = 'var(--surface-0)'; }}
-          >
-            <span className="text-base leading-none">{activeCurrency?.flag}</span>
-            <span className="text-sm font-semibold">{activeCurrency?.symbol}</span>
-            <ChevronDown
-              className="w-3.5 h-3.5"
-              style={{ color: 'var(--foreground-subtle)', transform: currencyOpen ? 'rotate(180deg)' : '' }}
-            />
-          </button>
-
-          {currencyOpen && (
-            <div
-              className="absolute right-0 top-full mt-2 min-w-[200px] rounded-xl overflow-hidden z-50"
-              style={{
-                background: 'var(--surface-0)',
-                border: '1px solid var(--border)',
-                boxShadow: 'var(--shadow-lg)',
-              }}
+        {/* Left: Mobile menu + breadcrumb */}
+        <div className="flex items-center gap-3">
+          {onMobileMenuClick && (
+            <button
+              onClick={onMobileMenuClick}
+              className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
             >
-              {(availableCurrencies as Moneda[]).map((c) => {
-                const opt = currencyOptions.find((o) => o.value === c);
-                const isActive = c === selectedCurrency;
-                return (
-                  <button
-                    key={c}
-                    onClick={() => {
-                      setSelectedCurrency(c);
-                      setCurrencyOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-all text-left"
-                    style={{
-                      color: isActive ? '#fff' : 'var(--foreground)',
-                      background: isActive ? 'var(--primary)' : 'var(--surface-0)',
-                      border: isActive ? 'none' : '1px solid var(--border)',
-                    }}
-                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = isActive ? 'var(--primary)' : 'var(--surface-1)'; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = isActive ? 'var(--primary)' : 'var(--surface-0)'; }}
-                  >
-                    <span className="text-base">{opt?.flag}</span>
-                    <div className="flex-1">
-                      <span className="font-medium">{opt?.symbol}</span>
-                      <span className="ml-2" style={{ color: 'var(--foreground-muted)' }}>{opt?.label}</span>
-                    </div>
-                    {isActive && (
-                      <Check className="w-4 h-4" style={{ color: 'var(--primary-foreground)' }} />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+              <Menu className="w-5 h-5" />
+            </button>
           )}
+          <div className="flex items-center gap-2 text-sm">
+            {!isHome && (
+              <>
+                <span className="text-slate-400">Dashboard</span>
+                <span className="text-slate-300">/</span>
+              </>
+            )}
+            <span className="font-semibold text-slate-900">{page.label}</span>
+          </div>
         </div>
 
-        {/* Node status */}
-        <div className="hidden lg:flex items-center gap-2">
-          {!nodeStatuses ? (
-            <div className="flex space-x-2">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="w-16 h-8 rounded-xl" style={{ background: 'var(--surface-1)' }} />
+        {/* Right: controls */}
+        <div className="flex items-center gap-3">
+
+          {/* Currency selector */}
+          <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-100">
+            <span className="text-sm">{currencyFlags[selectedCurrency] || '💰'}</span>
+            <select
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value as any)}
+              className="text-xs font-semibold text-slate-700 bg-transparent border-none outline-none cursor-pointer appearance-none pr-1"
+            >
+              {availableCurrencies.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
-            </div>
-          ) : (
-            <div className="flex space-x-2">
-              {nodeStatuses.map((ns) => {
-                return (
-                  <div
-                    key={ns.pais}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium"
-                    style={
-                      ns.healthy
-                        ? { background: 'var(--success)/10', color: 'var(--success)' }
-                        : { background: 'var(--danger)/10', color: 'var(--danger)' }
-                    }
-                    title={ns.healthy ? `${ns.latencyMs || '?'}ms` : (ns.error || 'Desconectado')}
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{
-                        background: ns.healthy ? 'var(--success)' : 'var(--danger)',
-                        boxShadow: ns.healthy ? '0 0 4px rgba(16, 185, 129, 0.3)' : '0 0 4px rgba(239, 68, 68, 0.3)',
-                      }}
-                    />
-                    {nodePais[ns.pais]}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+            </select>
+          </div>
 
-        {/* Bell */}
-        <button
-          className="flex items-center justify-center w-10 h-10 rounded-xl transition-all"
-          style={{ color: 'var(--foreground-muted)', background: 'var(--surface-0)', border: '1px solid var(--border)' }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.color = 'white';
-            (e.currentTarget as HTMLElement).style.background = 'var(--primary)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.color = 'var(--foreground-muted)';
-            (e.currentTarget as HTMLElement).style.background = 'var(--surface-0)';
-          }}
-        >
-          <Bell className="w-[18px] h-[18px]" />
-          <span
-            className="absolute top-1 right-1 w-2 h-2 rounded-full"
-            style={{ background: 'var(--primary)', boxShadow: '0 0 3px rgba(14, 165, 233, 0.4)' }}
-          />
-        </button>
+          {/* Divider */}
+          <div className="hidden md:block w-px h-5 bg-slate-200" />
+
+          {/* Node status */}
+          <div className="hidden md:flex items-center gap-1.5">
+            <Activity className="w-3.5 h-3.5 text-slate-400" />
+            {!nodeStatuses ? (
+              <>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="w-14 h-6 rounded-md animate-pulse bg-slate-100" />
+                ))}
+              </>
+            ) : (
+              nodeStatuses.map((ns) => (
+                <div
+                  key={ns.pais}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-semibold border',
+                    ns.healthy
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                      : 'bg-red-50 text-red-600 border-red-100'
+                  )}
+                  title={ns.healthy ? `${ns.latencyMs || '?'}ms` : (ns.error || 'Desconectado')}
+                >
+                  <span className={cn(
+                    'w-1.5 h-1.5 rounded-full',
+                    ns.healthy ? 'bg-emerald-500 animate-pulse' : 'bg-red-400'
+                  )} />
+                  {nodePais[ns.pais]}
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Divider */}
+          <div className="hidden md:block w-px h-5 bg-slate-200" />
+
+          {/* Notifications */}
+          <button className="relative p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors">
+            <Bell className="w-4.5 h-4.5" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-primary" />
+          </button>
+        </div>
       </div>
     </header>
   );

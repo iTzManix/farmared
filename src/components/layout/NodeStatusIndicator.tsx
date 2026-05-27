@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/Badge';
+import { cn } from '@/lib/utils';
 import type { Pais } from '@/types/database';
 
 interface NodeStatus {
@@ -24,13 +25,13 @@ const countryNames: Record<Pais, string> = {
 export function NodeStatusIndicator({ status, showLatency = false }: NodeStatusIndicatorProps) {
   return (
     <div className="flex items-center gap-2">
-      <div className={`w-2 h-2 rounded-full ${status.healthy ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-      <span className="text-sm font-medium text-slate-200">{countryNames[status.pais]}</span>
+      <div className={cn('w-2 h-2 rounded-full', status.healthy ? 'bg-emerald-500' : 'bg-red-400')} />
+      <span className="text-sm font-medium text-slate-700">{countryNames[status.pais]}</span>
       {status.healthy ? (
         <>
           <Badge variant="success">Online</Badge>
           {showLatency && status.latencyMs !== undefined && (
-            <span className="text-xs" style={{ color: 'var(--foreground-subtle)' }}>{status.latencyMs}ms</span>
+            <span className="text-xs text-slate-400">{status.latencyMs}ms</span>
           )}
         </>
       ) : (
@@ -56,7 +57,7 @@ export function AllNodesStatusIndicator({ statuses, compact = false }: AllNodesS
         {statuses.map((s) => (
           <div
             key={s.pais}
-            className={`w-2.5 h-2.5 rounded-full ${s.healthy ? 'bg-emerald-400' : 'bg-rose-400'}`}
+            className={cn('w-2.5 h-2.5 rounded-full', s.healthy ? 'bg-emerald-500' : 'bg-red-400')}
             title={`${countryNames[s.pais]}: ${s.healthy ? 'Online' : 'Offline'}`}
           />
         ))}

@@ -23,77 +23,57 @@ const topMedicamentos = [
   { nombre: 'Losartán',     cantidad: 21 },
 ];
 
-const tooltipStyle = {
-  backgroundColor: 'rgba(7, 14, 28, 0.9)',
-  backdropFilter: 'blur(12px)',
-  WebkitBackdropFilter: 'blur(12px)',
-  border: 'none',
-  borderRadius: '14px',
+// Charts need inline styles for SVG elements — this is one of the valid exceptions
+const tooltipContentStyle = {
+  backgroundColor: '#fff',
+  border: '1px solid #e2e8f0',
+  borderRadius: '8px',
   fontSize: '12px',
-  color: '#E2E8F0',
-  boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
-  padding: '10px 16px',
+  color: '#334155',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+  padding: '8px 12px',
 };
 
 export function DashboardChartsClient() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
       {/* ── Ventas de la semana ── */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'var(--surface-0)',
-          boxShadow: 'var(--shadow-sm)',
-        }}
-      >
-        <div className="px-8 pt-7 pb-2">
+      <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
+        <div className="px-6 pt-5 pb-2">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-white">Ventas de la semana</h3>
-              <p className="text-xs mt-1" style={{ color: 'var(--foreground-subtle)' }}>
-                Transacciones por día
-              </p>
+              <h3 className="text-sm font-semibold text-slate-900">Ventas de la semana</h3>
+              <p className="text-xs text-slate-400 mt-1">Transacciones por día</p>
             </div>
-            <span
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-              style={{ background: 'rgba(34,211,238,0.06)', color: '#22D3EE' }}
-            >
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-sky-50 text-sky-600">
               7 días
             </span>
           </div>
         </div>
 
-        <div className="px-4 py-6" style={{ height: 260 }}>
+        {/* Chart height needs style for Recharts ResponsiveContainer */}
+        <div className="px-4 py-4" style={{ height: 240 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={ventasSemana} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="fillVentas" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor="#22D3EE" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#22D3EE" stopOpacity={0} />
+                  <stop offset="0%"   stopColor="#0ea5e9" stopOpacity={0.15} />
+                  <stop offset="100%" stopColor="#0ea5e9" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="rgba(255,255,255,0.03)" strokeDasharray="0" vertical={false} />
-              <XAxis
-                dataKey="dia"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 11, fill: '#475569' }}
-              />
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 11, fill: '#475569' }}
-              />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: 'rgba(34,211,238,0.10)', strokeWidth: 1 }} />
+              <CartesianGrid stroke="#f1f5f9" strokeDasharray="0" vertical={false} />
+              <XAxis dataKey="dia" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+              <Tooltip contentStyle={tooltipContentStyle} cursor={{ stroke: '#e2e8f0', strokeWidth: 1 }} />
               <Area
                 type="monotone"
                 dataKey="ventas"
-                stroke="#22D3EE"
+                stroke="#0ea5e9"
                 strokeWidth={2}
                 fill="url(#fillVentas)"
-                dot={{ r: 3, fill: '#22D3EE', strokeWidth: 0 }}
-                activeDot={{ r: 5, fill: '#22D3EE', strokeWidth: 2, stroke: 'rgba(34,211,238,0.2)' }}
+                dot={{ r: 3, fill: '#0ea5e9', strokeWidth: 0 }}
+                activeDot={{ r: 5, fill: '#0ea5e9', strokeWidth: 2, stroke: '#bae6fd' }}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -101,65 +81,33 @@ export function DashboardChartsClient() {
       </div>
 
       {/* ── Top medicamentos ── */}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'var(--surface-0)',
-          boxShadow: 'var(--shadow-sm)',
-        }}
-      >
-        <div className="px-8 pt-7 pb-2">
+      <div className="rounded-xl border border-slate-200/80 bg-white shadow-sm overflow-hidden">
+        <div className="px-6 pt-5 pb-2">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-white">Top medicamentos</h3>
-              <p className="text-xs mt-1" style={{ color: 'var(--foreground-subtle)' }}>
-                Más vendidos este mes
-              </p>
+              <h3 className="text-sm font-semibold text-slate-900">Top medicamentos</h3>
+              <p className="text-xs text-slate-400 mt-1">Más vendidos este mes</p>
             </div>
-            <span
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-              style={{ background: 'rgba(129,140,248,0.06)', color: '#818CF8' }}
-            >
+            <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-violet-50 text-violet-600">
               Top 5
             </span>
           </div>
         </div>
 
-        <div className="px-4 py-6" style={{ height: 260 }}>
+        <div className="px-4 py-4" style={{ height: 240 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={topMedicamentos}
-              layout="vertical"
-              margin={{ top: 0, right: 8, left: 20, bottom: 0 }}
-            >
+            <BarChart data={topMedicamentos} layout="vertical" margin={{ top: 0, right: 8, left: 20, bottom: 0 }}>
               <defs>
                 <linearGradient id="barGrad" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%"   stopColor="#818CF8" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#22D3EE" stopOpacity={0.5} />
+                  <stop offset="0%"   stopColor="#8b5cf6" stopOpacity={0.8} />
+                  <stop offset="100%" stopColor="#0ea5e9" stopOpacity={0.6} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="rgba(255,255,255,0.03)" strokeDasharray="0" horizontal={false} />
-              <XAxis
-                type="number"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 11, fill: '#475569' }}
-              />
-              <YAxis
-                type="category"
-                dataKey="nombre"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 11, fill: '#94A3B8' }}
-                width={82}
-              />
-              <Tooltip contentStyle={tooltipStyle} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
-              <Bar
-                dataKey="cantidad"
-                fill="url(#barGrad)"
-                radius={[0, 6, 6, 0]}
-                barSize={14}
-              />
+              <CartesianGrid stroke="#f1f5f9" strokeDasharray="0" horizontal={false} />
+              <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+              <YAxis type="category" dataKey="nombre" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#94a3b8' }} width={82} />
+              <Tooltip contentStyle={tooltipContentStyle} cursor={{ fill: '#f8fafc' }} />
+              <Bar dataKey="cantidad" fill="url(#barGrad)" radius={[0, 6, 6, 0]} barSize={14} />
             </BarChart>
           </ResponsiveContainer>
         </div>

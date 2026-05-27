@@ -54,13 +54,11 @@ export function Pagination({
   };
 
   return (
-    <div
-      className="flex items-center justify-between px-6 py-5"
-    >
-      <div className="flex items-center text-sm" style={{ color: 'var(--foreground-subtle)' }}>
+    <div className="flex items-center justify-between border-t border-slate-200 px-6 py-5">
+      <div className="flex items-center text-sm text-slate-400">
         {totalItems !== undefined && (
           <span>
-            Mostrando {totalItems > 0 ? (currentPage - 1) * 10 + 1 : 0} -{' '}
+            Mostrando {totalItems > 0 ? (currentPage - 1) * 10 + 1 : 0} –{' '}
             {Math.min(currentPage * 10, totalItems)} de {totalItems} resultados
           </span>
         )}
@@ -73,7 +71,7 @@ export function Pagination({
           disabled={currentPage === 1}
           className="h-8 w-8 p-0"
         >
-          <ChevronsLeft className="w-4 h-4" />
+          <ChevronsLeft className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -82,14 +80,14 @@ export function Pagination({
           disabled={currentPage === 1}
           className="h-8 w-8 p-0"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="h-4 w-4" />
         </Button>
 
         {getPageNumbers().map((page, idx) =>
           typeof page === 'number' ? (
             <Button
               key={idx}
-              variant={page === currentPage ? 'primary' : 'ghost'}
+              variant={page === currentPage ? 'default' : 'ghost'}
               size="sm"
               onClick={() => onPageChange(page)}
               className="h-8 w-8 p-0"
@@ -97,7 +95,7 @@ export function Pagination({
               {page}
             </Button>
           ) : (
-            <span key={idx} className="px-2" style={{ color: 'var(--foreground-subtle)' }}>
+            <span key={idx} className="px-2 text-slate-400">
               ...
             </span>
           )
@@ -110,7 +108,7 @@ export function Pagination({
           disabled={currentPage === totalPages}
           className="h-8 w-8 p-0"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"
@@ -119,7 +117,7 @@ export function Pagination({
           disabled={currentPage === totalPages}
           className="h-8 w-8 p-0"
         >
-          <ChevronsRight className="w-4 h-4" />
+          <ChevronsRight className="h-4 w-4" />
         </Button>
       </div>
     </div>

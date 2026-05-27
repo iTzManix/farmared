@@ -2,6 +2,7 @@
 
 import { useEffect, ReactNode } from 'react';
 import { X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -19,7 +20,14 @@ const sizeClasses = {
   xl: 'max-w-4xl',
 };
 
-export function Modal({ isOpen, onClose, title, children, size = 'md', hideCloseButton = false }: ModalProps) {
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+  size = 'md',
+  hideCloseButton = false,
+}: ModalProps) {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -47,42 +55,33 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', hideClose
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-[#020617]/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
+
+      {/* Panel */}
       <div
-        className={`relative w-full ${sizeClasses[size]} mx-4`}
-        style={{
-          background: 'var(--surface-1)',
-          borderRadius: '24px',
-          boxShadow: 'var(--shadow-lg)',
-          backdropFilter: 'blur(28px)',
-        }}
+        className={cn(
+          'relative mx-4 w-full rounded-2xl border border-slate-200 bg-white shadow-xl',
+          sizeClasses[size]
+        )}
       >
         {title && (
-          <div className="flex items-center justify-between px-7 py-5">
-            <h2 className="text-lg font-semibold text-white">{title}</h2>
+          <div className="flex items-center justify-between border-b border-slate-100 px-7 py-5">
+            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
             {!hideCloseButton && (
               <button
                 onClick={onClose}
-                className="flex items-center justify-center w-8 h-8 rounded-xl transition-all"
-                style={{ color: 'var(--foreground-subtle)' }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
-                  (e.currentTarget as HTMLElement).style.color = 'white';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  (e.currentTarget as HTMLElement).style.color = 'var(--foreground-subtle)';
-                }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-900"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             )}
           </div>
         )}
-        <div className="px-7 pb-7">{children}</div>
+        <div className="px-7 pb-7 pt-5">{children}</div>
       </div>
     </div>
   );

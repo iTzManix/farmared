@@ -3,6 +3,7 @@
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { AlertTriangle, Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export type ConfirmDialogType = 'danger' | 'warning' | 'info';
 
@@ -25,15 +26,15 @@ const iconMap = {
 };
 
 const colorMap = {
-  danger: 'text-rose-300',
-  warning: 'text-amber-300',
-  info: 'text-cyan-300',
+  danger: 'text-red-500',
+  warning: 'text-amber-500',
+  info: 'text-sky-500',
 };
 
 const bgColorMap = {
-  danger: 'bg-rose-500/8',
-  warning: 'bg-amber-500/8',
-  info: 'bg-cyan-500/8',
+  danger: 'bg-red-50',
+  warning: 'bg-amber-50',
+  info: 'bg-sky-50',
 };
 
 export function ConfirmDialog({
@@ -52,17 +53,17 @@ export function ConfirmDialog({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
       <div className="text-center pt-2">
-        <div className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full ${bgColorMap[type]} mb-4`}>
-          <Icon className={`h-6 w-6 ${colorMap[type]}`} />
+        <div className={cn('mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4', bgColorMap[type])}>
+          <Icon className={cn('h-6 w-6', colorMap[type])} />
         </div>
-        <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
-        <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{message}</p>
+        <h3 className="text-lg font-semibold text-slate-900 mb-2">{title}</h3>
+        <p className="text-sm text-slate-500">{message}</p>
         <div className="flex justify-center gap-3 mt-8">
           <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>
           <Button
-            variant={type === 'danger' ? 'destructive' : 'primary'}
+            variant={type === 'danger' ? 'danger' : 'default'}
             onClick={() => { onConfirm(); }}
             isLoading={isLoading}
           >

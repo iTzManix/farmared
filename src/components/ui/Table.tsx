@@ -1,26 +1,19 @@
 'use client';
 
 import { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes, forwardRef } from 'react';
+import { cn } from '@/lib/utils';
 
 /* ── Wrapper ─────────────────────────────────────────────────── */
 export interface TableWrapperProps extends HTMLAttributes<HTMLDivElement> {}
 
 const TableWrapper = forwardRef<HTMLDivElement, TableWrapperProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={`rounded-2xl overflow-hidden ${className}`}
-        style={{
-          background: 'var(--surface-0)',
-          boxShadow: 'var(--shadow-sm)',
-        }}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn('overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm', className)}
+      {...props}
+    />
+  )
 );
 TableWrapper.displayName = 'TableWrapper';
 
@@ -28,20 +21,15 @@ TableWrapper.displayName = 'TableWrapper';
 export interface TableProps extends HTMLAttributes<HTMLTableElement> {}
 
 const Table = forwardRef<HTMLTableElement, TableProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <div className="w-full overflow-auto">
-        <table
-          ref={ref}
-          className={`w-full text-sm ${className}`}
-          style={{ borderCollapse: 'collapse' }}
-          {...props}
-        >
-          {children}
-        </table>
-      </div>
-    );
-  }
+  ({ className, ...props }, ref) => (
+    <div className="w-full overflow-auto">
+      <table
+        ref={ref}
+        className={cn('w-full border-collapse text-sm', className)}
+        {...props}
+      />
+    </div>
+  )
 );
 Table.displayName = 'Table';
 
@@ -49,17 +37,13 @@ Table.displayName = 'Table';
 export interface TableHeaderProps extends HTMLAttributes<HTMLTableSectionElement> {}
 
 const TableHeader = forwardRef<HTMLTableSectionElement, TableHeaderProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <thead
-        ref={ref}
-        className={className}
-        {...props}
-      >
-        {children}
-      </thead>
-    );
-  }
+  ({ className, ...props }, ref) => (
+    <thead
+      ref={ref}
+      className={cn('[&_tr]:border-b [&_tr]:border-slate-100', className)}
+      {...props}
+    />
+  )
 );
 TableHeader.displayName = 'TableHeader';
 
@@ -67,13 +51,13 @@ TableHeader.displayName = 'TableHeader';
 export interface TableBodyProps extends HTMLAttributes<HTMLTableSectionElement> {}
 
 const TableBody = forwardRef<HTMLTableSectionElement, TableBodyProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <tbody ref={ref} className={className} {...props}>
-        {children}
-      </tbody>
-    );
-  }
+  ({ className, ...props }, ref) => (
+    <tbody
+      ref={ref}
+      className={cn('[&_tr:last-child]:border-0', className)}
+      {...props}
+    />
+  )
 );
 TableBody.displayName = 'TableBody';
 
@@ -81,23 +65,16 @@ TableBody.displayName = 'TableBody';
 export interface TableRowProps extends HTMLAttributes<HTMLTableRowElement> {}
 
 const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <tr
-        ref={ref}
-        className={`transition-colors ${className}`}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.02)';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.background = 'transparent';
-        }}
-        {...props}
-      >
-        {children}
-      </tr>
-    );
-  }
+  ({ className, ...props }, ref) => (
+    <tr
+      ref={ref}
+      className={cn(
+        'border-b border-slate-100 transition-colors hover:bg-slate-50/60',
+        className
+      )}
+      {...props}
+    />
+  )
 );
 TableRow.displayName = 'TableRow';
 
@@ -105,21 +82,16 @@ TableRow.displayName = 'TableRow';
 export interface TableHeadProps extends ThHTMLAttributes<HTMLTableCellElement> {}
 
 const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <th
-        ref={ref}
-        className={`px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-widest ${className}`}
-        style={{
-          color: 'var(--foreground-subtle)',
-          background: 'rgba(255,255,255,0.015)',
-        }}
-        {...props}
-      >
-        {children}
-      </th>
-    );
-  }
+  ({ className, ...props }, ref) => (
+    <th
+      ref={ref}
+      className={cn(
+        'bg-slate-50/50 px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-widest text-slate-500',
+        className
+      )}
+      {...props}
+    />
+  )
 );
 TableHead.displayName = 'TableHead';
 
@@ -127,18 +99,13 @@ TableHead.displayName = 'TableHead';
 export interface TableCellProps extends TdHTMLAttributes<HTMLTableCellElement> {}
 
 const TableCell = forwardRef<HTMLTableCellElement, TableCellProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <td
-        ref={ref}
-        className={`px-6 py-4 whitespace-nowrap ${className}`}
-        style={{ color: 'var(--foreground)' }}
-        {...props}
-      >
-        {children}
-      </td>
-    );
-  }
+  ({ className, ...props }, ref) => (
+    <td
+      ref={ref}
+      className={cn('px-6 py-4 whitespace-nowrap text-slate-700', className)}
+      {...props}
+    />
+  )
 );
 TableCell.displayName = 'TableCell';
 

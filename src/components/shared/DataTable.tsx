@@ -11,7 +11,9 @@ import {
 } from '@/components/ui/Table';
 import { Pagination } from '@/components/ui/Pagination';
 import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
 import { Search, ArrowUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export interface Column<T> {
   id: string;
@@ -52,24 +54,19 @@ export function DataTable<T>({
 
   const filteredData = useMemo(() => {
     let result = [...data];
-
     if (searchTerm && searchKey) {
       result = result.filter((item) =>
         String(item[searchKey]).toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-
     if (sortColumn) {
       result.sort((a, b) => {
         const aVal = a[sortColumn as keyof T];
         const bVal = b[sortColumn as keyof T];
-        const comparison = String(aVal).localeCompare(String(bVal), undefined, {
-          numeric: true,
-        });
+        const comparison = String(aVal).localeCompare(String(bVal), undefined, { numeric: true });
         return sortDirection === 'asc' ? comparison : -comparison;
       });
     }
-
     return result;
   }, [data, searchTerm, searchKey, sortColumn, sortDirection]);
 
@@ -89,14 +86,11 @@ export function DataTable<T>({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {showSearch && searchKey && (
         <div className="flex items-center gap-4">
           <div className="relative max-w-sm flex-1">
-            <Search
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-              style={{ color: 'var(--foreground-subtle)' }}
-            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             <Input
               value={searchTerm}
               onChange={(e) => {
@@ -110,34 +104,24 @@ export function DataTable<T>({
         </div>
       )}
 
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{
-          background: 'var(--surface-0)',
-          boxShadow: 'var(--shadow-sm)',
-        }}
-      >
+      <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
-              <TableRow
-                className="bg-transparent"
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-              >
+            <TableRow className="hover:bg-transparent">
               {columns.map((col) => (
                 <TableHead
                   key={col.id}
-                  style={{ width: col.width }}
-                  className={col.sortable ? 'cursor-pointer select-none' : ''}
+                  style={col.width ? { width: col.width } : undefined}
+                  className={cn(col.sortable && 'cursor-pointer select-none')}
                   onClick={() => col.sortable && handleSort(col.id)}
                 >
                   <div className="flex items-center gap-1">
                     {col.header}
                     {col.sortable && (
-                      <ArrowUpDown
-                        style={{ color: sortColumn === col.id ? 'var(--accent-cyan)' : 'var(--foreground-subtle)' }}
-                        className="w-3 h-3"
-                      />
+                      <ArrowUpDown className={cn(
+                        'w-3 h-3',
+                        sortColumn === col.id ? 'text-primary' : 'text-slate-400'
+                      )} />
                     )}
                   </div>
                 </TableHead>
@@ -150,8 +134,7 @@ export function DataTable<T>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (actions ? 1 : 0)}
-                  className="text-center py-12"
-                  style={{ color: 'var(--foreground-subtle)' }}
+                  className="text-center py-10 text-slate-400"
                 >
                   Cargando...
                 </TableCell>
@@ -160,8 +143,7 @@ export function DataTable<T>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (actions ? 1 : 0)}
-                  className="text-center py-12"
-                  style={{ color: 'var(--foreground-subtle)' }}
+                  className="text-center py-10 text-slate-400"
                 >
                   No hay datos para mostrar
                 </TableCell>
@@ -170,7 +152,7 @@ export function DataTable<T>({
               paginatedData.map((row, idx) => (
                 <TableRow
                   key={idx}
-                  className={onRowClick ? 'cursor-pointer' : ''}
+                  className={cn(onRowClick && 'cursor-pointer')}
                   onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((col) => (

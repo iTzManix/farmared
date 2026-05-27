@@ -166,7 +166,7 @@ NEXTAUTH_URL=http://localhost:3000
 - **Bases de Datos**:
   - SQL Server: tedious + tarn
   - PostgreSQL: pg
-- **UI**: TailwindCSS v4, Lucide React (Icons), Floating Panel UI System
+- **UI**: TailwindCSS v4, Lucide React (Icons), shadcn-like pattern (clsx, tailwind-merge, cva)
 - **Validación**: Zod
 
 ## Estructura de Tablas
