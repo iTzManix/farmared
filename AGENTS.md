@@ -80,10 +80,10 @@ Los usuarios iniciales están definidos en `sql/seed-data.sql`. Necesitas genera
 // Ejecutar en Node.js:
 const bcrypt = require('bcryptjs');
 const passwords = {
-  superadmin: 'FarmaredSuper2026!',
-  admin_bo: 'BoliviaAdmin123!',
-  admin_pe: 'PeruAdmin123!',
-  admin_cl: 'ChileAdmin123!'
+  superadmin: 'TU_PASSWORD_SUPERADMIN',
+  admin_bo: 'TU_PASSWORD_BOLIVIA',
+  admin_pe: 'TU_PASSWORD_PERU',
+  admin_cl: 'TU_PASSWORD_CHILE'
 };
 Object.entries(passwords).forEach(([user, pass]) => {
   console.log(user + ':', bcrypt.hashSync(pass, 10));
@@ -99,25 +99,25 @@ Object.entries(passwords).forEach(([user, pass]) => {
 ### 4. Variables de Entorno
 Asegúrate de que `.env.local` tenga:
 ```env
-DB_BOLIVIA_HOST=26.221.13.33
+DB_BOLIVIA_HOST=127.0.0.1
 DB_BOLIVIA_PORT=1433
 DB_BOLIVIA_USER=sa
-DB_BOLIVIA_PASSWORD=123456
+DB_BOLIVIA_PASSWORD=tu_password_aqui
 DB_BOLIVIA_NAME=farmared
 
-DB_PERU_HOST=26.134.31.38
+DB_PERU_HOST=127.0.0.1
 DB_PERU_PORT=1433
 DB_PERU_USER=sa
-DB_PERU_PASSWORD=123456
+DB_PERU_PASSWORD=tu_password_aqui
 DB_PERU_NAME=farmared
 
-DB_CHILE_HOST=26.132.12.209
+DB_CHILE_HOST=127.0.0.1
 DB_CHILE_PORT=5432
 DB_CHILE_USER=postgres
-DB_CHILE_PASSWORD=alvaro1234
+DB_CHILE_PASSWORD=tu_password_aqui
 DB_CHILE_NAME=farmared
 
-NEXTAUTH_SECRET=farmared-super-secret-key-2026
+NEXTAUTH_SECRET=tu-secreto-aleatorio-aqui
 NEXTAUTH_URL=http://localhost:3000
 ```
 

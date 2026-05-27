@@ -25,10 +25,10 @@ Sistema distribuido para gestión de farmacias en Bolivia, Perú y Chile. Caso d
 
 | Usuario       | Rol           | País   | Contraseña                 |
 |---------------|---------------|--------|----------------------------|
-| `superadmin`  | Super Admin   | Global | `FarmaredSuper2026!`      |
-| `admin_bo`    | Admin         | BO     | `BoliviaAdmin123!`         |
-| `admin_pe`    | Admin         | PE     | `PeruAdmin123!`            |
-| `admin_cl`    | Admin         | CL     | `ChileAdmin123!`           |
+| `superadmin`  | Super Admin   | Global | *(Configurar en seed-data)*|
+| `admin_bo`    | Admin         | BO     | *(Configurar en seed-data)*|
+| `admin_pe`    | Admin         | PE     | *(Configurar en seed-data)*|
+| `admin_cl`    | Admin         | CL     | *(Configurar en seed-data)*|
 
 ### Generar Password Hashes
 
@@ -40,10 +40,10 @@ Crea un script `generate-hashes.js`:
 const bcrypt = require('bcryptjs');
 
 const passwords = {
-  superadmin: 'FarmaredSuper2026!',
-  admin_bo: 'BoliviaAdmin123!',
-  admin_pe: 'PeruAdmin123!',
-  admin_cl: 'ChileAdmin123!'
+  superadmin: 'TU_PASSWORD_SUPERADMIN',
+  admin_bo: 'TU_PASSWORD_BOLIVIA',
+  admin_pe: 'TU_PASSWORD_PERU',
+  admin_cl: 'TU_PASSWORD_CHILE'
 };
 
 console.log('=== Generando Password Hashes (bcrypt 10 rounds) ===\n');
@@ -107,28 +107,28 @@ El archivo `.env.local` ya está configurado con:
 
 ```env
 # Nodo Bolivia
-DB_BOLIVIA_HOST=26.221.13.33
+DB_BOLIVIA_HOST=127.0.0.1
 DB_BOLIVIA_PORT=1433
 DB_BOLIVIA_USER=sa
-DB_BOLIVIA_PASSWORD=123456
+DB_BOLIVIA_PASSWORD=tu_password_aqui
 DB_BOLIVIA_NAME=farmared
 
 # Nodo Perú
-DB_PERU_HOST=26.134.31.38
+DB_PERU_HOST=127.0.0.1
 DB_PERU_PORT=1433
 DB_PERU_USER=sa
-DB_PERU_PASSWORD=123456
+DB_PERU_PASSWORD=tu_password_aqui
 DB_PERU_NAME=farmared
 
 # Nodo Chile
-DB_CHILE_HOST=26.132.12.209
+DB_CHILE_HOST=127.0.0.1
 DB_CHILE_PORT=5432
 DB_CHILE_USER=postgres
-DB_CHILE_PASSWORD=alvaro1234
+DB_CHILE_PASSWORD=tu_password_aqui
 DB_CHILE_NAME=farmared
 
 # Auth
-NEXTAUTH_SECRET=farmared-super-secret-key-2026
+NEXTAUTH_SECRET=tu-secreto-aleatorio-aqui
 NEXTAUTH_URL=http://localhost:3000
 ```
 
