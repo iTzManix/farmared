@@ -55,8 +55,7 @@ export function Pagination({
 
   return (
     <div
-      className="flex items-center justify-between px-6 py-4"
-      style={{ borderTop: '1px solid var(--border-subtle)' }}
+      className="flex items-center justify-between px-6 py-5"
     >
       <div className="flex items-center text-sm" style={{ color: 'var(--foreground-subtle)' }}>
         {totalItems !== undefined && (
@@ -98,7 +97,7 @@ export function Pagination({
               {page}
             </Button>
           ) : (
-            <span key={idx} className="px-2 text-slate-500">
+            <span key={idx} className="px-2" style={{ color: 'var(--foreground-subtle)' }}>
               ...
             </span>
           )

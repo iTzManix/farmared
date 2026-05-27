@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/Table';
 import { Pagination } from '@/components/ui/Pagination';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
 import { Search, ArrowUpDown } from 'lucide-react';
 
 export interface Column<T> {
@@ -115,8 +114,7 @@ export function DataTable<T>({
         className="rounded-2xl overflow-hidden"
         style={{
           background: 'var(--surface-0)',
-          border: '1px solid var(--border-subtle)',
-          boxShadow: 'var(--shadow-md)',
+          boxShadow: 'var(--shadow-sm)',
         }}
       >
         <Table>
@@ -152,7 +150,7 @@ export function DataTable<T>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (actions ? 1 : 0)}
-                  className="text-center py-10"
+                  className="text-center py-12"
                   style={{ color: 'var(--foreground-subtle)' }}
                 >
                   Cargando...
@@ -162,7 +160,7 @@ export function DataTable<T>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length + (actions ? 1 : 0)}
-                  className="text-center py-10"
+                  className="text-center py-12"
                   style={{ color: 'var(--foreground-subtle)' }}
                 >
                   No hay datos para mostrar

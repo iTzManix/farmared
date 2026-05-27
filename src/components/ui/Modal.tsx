@@ -2,7 +2,6 @@
 
 import { useEffect, ReactNode } from 'react';
 import { X } from 'lucide-react';
-import { Button } from './Button';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -53,19 +52,37 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', hideClose
         onClick={onClose}
       />
       <div
-        className={`relative bg-[#0F172A]/90 border border-white/10 rounded-3xl shadow-xl w-full ${sizeClasses[size]} mx-4 animate-in fade-in zoom-in duration-200`}
+        className={`relative w-full ${sizeClasses[size]} mx-4`}
+        style={{
+          background: 'var(--surface-1)',
+          borderRadius: '24px',
+          boxShadow: 'var(--shadow-lg)',
+          backdropFilter: 'blur(28px)',
+        }}
       >
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
-            <h2 className="text-lg font-semibold text-slate-100">{title}</h2>
+          <div className="flex items-center justify-between px-7 py-5">
+            <h2 className="text-lg font-semibold text-white">{title}</h2>
             {!hideCloseButton && (
-              <Button variant="ghost" size="sm" onClick={onClose} className="h-8 w-8 p-0">
+              <button
+                onClick={onClose}
+                className="flex items-center justify-center w-8 h-8 rounded-xl transition-all"
+                style={{ color: 'var(--foreground-subtle)' }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)';
+                  (e.currentTarget as HTMLElement).style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--foreground-subtle)';
+                }}
+              >
                 <X className="w-5 h-5" />
-              </Button>
+              </button>
             )}
           </div>
         )}
-        <div className="p-6">{children}</div>
+        <div className="px-7 pb-7">{children}</div>
       </div>
     </div>
   );

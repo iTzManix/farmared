@@ -1,14 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 import { DataTable } from '@/components/shared/DataTable';
 import { sileo } from 'sileo';
-import { SucursalTable } from '@/types/database';
+import { Plus } from 'lucide-react';
+
+interface SucursalRow {
+  id_sucursal: number;
+  nombre: string;
+  direccion: string;
+  telefono: string;
+  pais: string;
+}
 
 export default function SucursalesPage() {
-  const [data, setData] = useState<SucursalTable[]>([]);
+  const [data, setData] = useState<SucursalRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -23,39 +33,40 @@ export default function SucursalesPage() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
   const columns = [
-    { id: 'nombre', header: 'Nombre', accessorKey: 'nombre' as keyof SucursalTable, sortable: true },
-    { id: 'pais', header: 'Pais', accessorKey: 'pais' as keyof SucursalTable },
-    { id: 'ciudad', header: 'Ciudad', accessorKey: 'ciudad' as keyof SucursalTable },
-    { id: 'direccion', header: 'Direccion', accessorKey: 'direccion' as keyof SucursalTable },
-    { id: 'estado', header: 'Estado', accessorKey: 'estado' as keyof SucursalTable },
+    { id: 'nombre', header: 'Nombre', accessorKey: 'nombre' as keyof SucursalRow, sortable: true },
+    { id: 'direccion', header: 'Dirección', accessorKey: 'direccion' as keyof SucursalRow },
+    { id: 'telefono', header: 'Teléfono', accessorKey: 'telefono' as keyof SucursalRow },
+    { id: 'pais', header: 'País', accessorKey: 'pais' as keyof SucursalRow },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-100">Sucursales</h1>
-          <p className="text-slate-400 mt-2">Red de puntos de venta</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Sucursales</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Red de farmacias activas</p>
         </div>
+        <Button onClick={() => setIsModalOpen(true)} className="gap-2">
+          <Plus className="w-4 h-4" />
+          Nueva Sucursal
+        </Button>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardContent className="p-0 sm:p-0">
-          <div className="p-6">
-            <DataTable
-              data={data}
-              columns={columns}
-              searchKey="nombre"
-              isLoading={loading}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <DataTable
+        data={data}
+        columns={columns}
+        searchKey="nombre"
+        isLoading={loading}
+      />
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Nueva Sucursal">
+        <div className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
+          Formulario de sucursal pendiente de implementar.
+        </div>
+      </Modal>
     </div>
   );
 }

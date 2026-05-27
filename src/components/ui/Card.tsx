@@ -9,11 +9,10 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={`rounded-2xl overflow-hidden ${className}`}
+        className={`rounded-xl ${className}`}
         style={{
           background: 'var(--surface-0)',
-          border: '1px solid var(--border-subtle)',
-          boxShadow: 'var(--shadow-md)',
+          border: '1px solid var(--border)',
         }}
         {...props}
       >
@@ -31,8 +30,7 @@ const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
     return (
       <div
         ref={ref}
-        className={`px-7 py-5 ${className}`}
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
+        className={`px-6 py-4 ${className}`}
         {...props}
       >
         {children}
@@ -47,13 +45,13 @@ export interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {}
 const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
   ({ children, className = '', ...props }, ref) => {
     return (
-      <h3
+      <h2
         ref={ref}
-        className={`text-base font-semibold tracking-tight text-white ${className}`}
+        className={`text-lg font-semibold text-foreground ${className}`}
         {...props}
       >
         {children}
-      </h3>
+      </h2>
     );
   }
 );
@@ -64,7 +62,7 @@ export interface CardContentProps extends HTMLAttributes<HTMLDivElement> {}
 const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
   ({ children, className = '', ...props }, ref) => {
     return (
-      <div ref={ref} className={`px-7 py-6 ${className}`} {...props}>
+      <div ref={ref} className={`px-6 py-4 ${className}`} {...props}>
         {children}
       </div>
     );
@@ -79,8 +77,7 @@ const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
     return (
       <div
         ref={ref}
-        className={`px-7 py-4 ${className}`}
-        style={{ borderTop: '1px solid var(--border-subtle)' }}
+        className={`px-6 py-4 ${className}`}
         {...props}
       >
         {children}

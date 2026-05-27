@@ -1,19 +1,35 @@
-import { Card } from '@/components/ui/Card';
+'use client';
+
+import type { ReactNode } from 'react';
 
 interface EmptyStateProps {
+  icon?: ReactNode;
   title: string;
   description?: string;
-  icon?: string;
+  action?: ReactNode;
 }
 
-export function EmptyState({ title, description, icon = '📦' }: EmptyStateProps) {
+export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <Card>
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <span className="text-5xl mb-4">{icon}</span>
-        <h3 className="text-lg font-semibold text-slate-100">{title}</h3>
-        {description && <p className="mt-2 text-sm text-slate-400">{description}</p>}
-      </div>
-    </Card>
+    <div
+      className="flex flex-col items-center justify-center py-16 px-8 rounded-2xl"
+      style={{
+        background: 'var(--surface-0)',
+        boxShadow: 'var(--shadow-sm)',
+      }}
+    >
+      {icon && (
+        <div className="mb-5" style={{ color: 'var(--foreground-subtle)' }}>
+          {icon}
+        </div>
+      )}
+      <h3 className="text-lg font-semibold text-white mb-1">{title}</h3>
+      {description && (
+        <p className="text-sm mb-6" style={{ color: 'var(--foreground-subtle)' }}>
+          {description}
+        </p>
+      )}
+      {action}
+    </div>
   );
 }

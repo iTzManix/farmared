@@ -28,25 +28,25 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           className={`w-full h-11 px-4 rounded-xl text-sm transition-all ${className}`}
           style={{
-            background: 'var(--surface-hover)',
-            border: error ? '1px solid rgba(251,113,133,0.5)' : '1px solid var(--border-subtle)',
+            background: 'rgba(255,255,255,0.03)',
+            border: 'none',
             color: 'var(--foreground)',
             outline: 'none',
+            boxShadow: error ? '0 0 0 1px rgba(251,113,133,0.5)' : 'none',
           }}
           onFocus={(e) => {
             const el = e.target as HTMLInputElement;
             if (error) {
-              el.style.border = '1px solid rgba(251,113,133,0.8)';
-              el.style.boxShadow = '0 0 0 3px rgba(251,113,133,0.08)';
+              el.style.boxShadow = '0 0 0 1px rgba(251,113,133,0.8), 0 0 0 3px rgba(251,113,133,0.06)';
             } else {
-              el.style.border = '1px solid var(--border-focus)';
-              el.style.boxShadow = '0 0 0 3px rgba(34,211,238,0.06)';
+              el.style.background = 'rgba(255,255,255,0.05)';
+              el.style.boxShadow = '0 0 0 1px rgba(34,211,238,0.3), 0 0 0 3px rgba(34,211,238,0.04)';
             }
           }}
           onBlur={(e) => {
             const el = e.target as HTMLInputElement;
-            el.style.border = error ? '1px solid rgba(251,113,133,0.5)' : '1px solid var(--border-subtle)';
-            el.style.boxShadow = 'none';
+            el.style.background = 'rgba(255,255,255,0.03)';
+            el.style.boxShadow = error ? '0 0 0 1px rgba(251,113,133,0.5)' : 'none';
           }}
           {...props}
         />

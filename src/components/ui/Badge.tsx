@@ -5,6 +5,8 @@ import type { Pais, RolUsuario, Moneda } from '@/types/database';
 
 export type BadgeVariant =
   | 'default'
+  | 'primary'
+  | 'secondary'
   | 'success'
   | 'warning'
   | 'danger'
@@ -17,43 +19,36 @@ export type BadgeVariant =
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
-  dot?: boolean;
 }
 
-const variantTokens: Record<BadgeVariant, { bg: string; color: string; border: string; dotColor?: string }> = {
-  default:    { bg: 'rgba(255,255,255,0.08)', color: '#CBD5E1',  border: 'rgba(255,255,255,0.1)',  dotColor: '#94A3B8' },
-  success:    { bg: 'rgba(52,211,153,0.1)',   color: '#6EE7B7',  border: 'rgba(52,211,153,0.2)',   dotColor: '#34D399' },
-  warning:    { bg: 'rgba(251,191,36,0.1)',   color: '#FCD34D',  border: 'rgba(251,191,36,0.2)',   dotColor: '#FBBF24' },
-  danger:     { bg: 'rgba(251,113,133,0.1)',  color: '#FCA5A5',  border: 'rgba(251,113,133,0.2)',  dotColor: '#FB7185' },
-  info:       { bg: 'rgba(129,140,248,0.1)',  color: '#A5B4FC',  border: 'rgba(129,140,248,0.2)',  dotColor: '#818CF8' },
-  'pais-BO':  { bg: 'rgba(59,130,246,0.1)',   color: '#93C5FD',  border: 'rgba(59,130,246,0.2)',   dotColor: '#3B82F6' },
-  'pais-PE':  { bg: 'rgba(239,68,68,0.1)',    color: '#FCA5A5',  border: 'rgba(239,68,68,0.2)',    dotColor: '#EF4444' },
-  'pais-CL':  { bg: 'rgba(16,185,129,0.1)',   color: '#6EE7B7',  border: 'rgba(16,185,129,0.2)',   dotColor: '#10B981' },
-  superadmin: { bg: 'rgba(52,211,153,0.1)',   color: '#6EE7B7',  border: 'rgba(52,211,153,0.2)',   dotColor: '#34D399' },
-  admin:      { bg: 'rgba(255,255,255,0.06)', color: '#94A3B8',  border: 'rgba(255,255,255,0.1)',  dotColor: '#64748B' },
+const variantTokens: Record<BadgeVariant, { bg: string; color: string }> = {
+  default:    { bg: 'var(--surface-1)', color: 'var(--foreground-muted)' },
+  primary:    { bg: 'var(--primary)/10',   color: 'var(--primary)' },
+  secondary:  { bg: 'var(--secondary)/10', color: 'var(--secondary)' },
+  success:    { bg: 'var(--success)/10',   color: 'var(--success)' },
+  warning:    { bg: 'var(--warning)/10',   color: 'var(--warning)' },
+  danger:     { bg: 'var(--danger)/10',    color: 'var(--danger)' },
+  info:       { bg: 'var(--info)/10',      color: 'var(--info)' },
+  'pais-BO':  { bg: 'var(--pais-bo)/10',   color: 'var(--pais-bo)' },
+  'pais-PE':  { bg: 'var(--pais-pe)/10',   color: 'var(--pais-pe)' },
+  'pais-CL':  { bg: 'var(--pais-cl)/10',   color: 'var(--pais-cl)' },
+  superadmin: { bg: 'var(--success)/10',   color: 'var(--success)' },
+  admin:      { bg: 'var(--surface-1)', color: 'var(--foreground-muted)' },
 };
 
 const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ children, variant = 'default', dot = false, className = '', style, ...props }, ref) => {
+  ({ children, variant = 'default', className = '', ...props }, ref) => {
     const t = variantTokens[variant];
     return (
       <span
         ref={ref}
-        className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-xs font-semibold rounded-full ${className}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-xs font-semibold rounded-full ${className}`}
         style={{
           background: t.bg,
           color: t.color,
-          border: `1px solid ${t.border}`,
-          ...style,
         }}
         {...props}
       >
-        {dot && (
-          <span
-            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-            style={{ background: t.dotColor }}
-          />
-        )}
         {children}
       </span>
     );

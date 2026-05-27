@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { DataTable } from '@/components/shared/DataTable';
@@ -66,11 +65,11 @@ export default function MedicamentosPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-100">Medicamentos</h1>
-          <p className="text-slate-400 mt-2">Catalogo y gestion de medicamentos</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Medicamentos</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Catálogo y gestión de medicamentos</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} className="gap-2">
           <Plus className="w-4 h-4" />
@@ -78,18 +77,12 @@ export default function MedicamentosPage() {
         </Button>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardContent className="p-0 sm:p-0">
-          <div className="p-6">
-            <DataTable
-              data={data}
-              columns={columns}
-              searchKey="nombre"
-              isLoading={loading}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <DataTable
+        data={data}
+        columns={columns}
+        searchKey="nombre"
+        isLoading={loading}
+      />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Nuevo Medicamento">
         <MedicamentoForm onSubmit={handleSubmit} />

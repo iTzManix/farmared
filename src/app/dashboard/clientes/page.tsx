@@ -1,17 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { DataTable } from '@/components/shared/DataTable';
 import { ClienteForm } from '@/components/forms/ClienteForm';
 import { sileo } from 'sileo';
 import { Plus } from 'lucide-react';
-import { ClienteTable } from '@/types/database';
+
+interface ClienteRow {
+  id_cliente: number;
+  nombre: string;
+  nit_ci: string;
+  telefono: string;
+  email: string;
+  pais: string;
+}
 
 export default function ClientesPage() {
-  const [data, setData] = useState<ClienteTable[]>([]);
+  const [data, setData] = useState<ClienteRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,11 +35,8 @@ export default function ClientesPage() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = async (formData: any) => {
     try {
       const res = await fetch('/api/clientes', {
@@ -41,7 +45,7 @@ export default function ClientesPage() {
         body: JSON.stringify(formData),
       });
       if (!res.ok) throw new Error('Error al guardar');
-      sileo.success({ title: 'Exito', description: 'Cliente guardado exitosamente' });
+      sileo.success({ title: 'Éxito', description: 'Cliente registrado exitosamente' });
       setIsModalOpen(false);
       fetchData();
     } catch {
@@ -50,19 +54,19 @@ export default function ClientesPage() {
   };
 
   const columns = [
-    { id: 'nombre', header: 'Nombre', accessorKey: 'nombre' as keyof ClienteTable, sortable: true },
-    { id: 'apellido', header: 'Apellido', accessorKey: 'apellido' as keyof ClienteTable },
-    { id: 'ci', header: 'Documento', accessorKey: 'ci' as keyof ClienteTable },
-    { id: 'telefono', header: 'Telefono', accessorKey: 'telefono' as keyof ClienteTable },
-    { id: 'email', header: 'Email', accessorKey: 'email' as keyof ClienteTable },
+    { id: 'nombre', header: 'Nombre', accessorKey: 'nombre' as keyof ClienteRow, sortable: true },
+    { id: 'nit_ci', header: 'NIT/CI', accessorKey: 'nit_ci' as keyof ClienteRow },
+    { id: 'telefono', header: 'Teléfono', accessorKey: 'telefono' as keyof ClienteRow },
+    { id: 'email', header: 'Email', accessorKey: 'email' as keyof ClienteRow },
+    { id: 'pais', header: 'País', accessorKey: 'pais' as keyof ClienteRow },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-100">Clientes</h1>
-          <p className="text-slate-400 mt-2">Base de datos de clientes recurrentes</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Clientes</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Base de clientes registrados</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} className="gap-2">
           <Plus className="w-4 h-4" />
@@ -70,18 +74,12 @@ export default function ClientesPage() {
         </Button>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardContent className="p-0 sm:p-0">
-          <div className="p-6">
-            <DataTable
-              data={data}
-              columns={columns}
-              searchKey="nombre"
-              isLoading={loading}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <DataTable
+        data={data}
+        columns={columns}
+        searchKey="nombre"
+        isLoading={loading}
+      />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Nuevo Cliente">
         <ClienteForm onSubmit={handleSubmit} />

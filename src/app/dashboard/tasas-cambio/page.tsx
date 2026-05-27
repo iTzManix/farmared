@@ -6,22 +6,22 @@ import { redirect } from 'next/navigation';
 export default async function TasasCambioPage() {
   const session = await getSession();
   if (!session) redirect('/login');
-  
+
   if (!isSuperAdmin(session)) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-semibold text-rose-500">Acceso Denegado</h1>
-        <p className="text-slate-400">Solo los Super Administradores pueden acceder a las tasas de cambio.</p>
+      <div className="space-y-8">
+        <h1 className="text-3xl font-bold tracking-tight text-white">Acceso Denegado</h1>
+        <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>Solo los Super Administradores pueden acceder a las tasas de cambio.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-slate-100">Tasas de Cambio</h1>
-          <p className="text-slate-400 mt-1">Gestión de conversión de monedas globales</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Tasas de Cambio</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Gestión de conversión de monedas globales</p>
         </div>
         <Badge variant="info">En Construcción</Badge>
       </div>
@@ -31,9 +31,9 @@ export default async function TasasCambioPage() {
           <CardTitle>Configuración de Tasas</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-12 text-slate-400">
-            <p>Esta sección permitirá:</p>
-            <ul className="mt-4 space-y-2 text-sm">
+          <div className="text-center py-12" style={{ color: 'var(--foreground-subtle)' }}>
+            <p className="text-sm">Esta sección permitirá:</p>
+            <ul className="mt-4 space-y-2 text-sm" style={{ color: 'var(--foreground-muted)' }}>
               <li>✓ Ver tasas de cambio actuales entre BOB, PEN y CLP</li>
               <li>✓ Editar tasas manualmente (solo Super Admin)</li>
               <li>✓ Sincronizar tasas desde una API externa</li>

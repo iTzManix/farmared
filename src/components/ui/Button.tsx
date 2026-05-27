@@ -3,8 +3,9 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: 'primary' | 'secondary' | 'destructive' | 'outline' | 'ghost';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  asChild?: boolean;
   isLoading?: boolean;
 }
 
@@ -13,72 +14,49 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     {
       children,
       variant = 'primary',
-      size = 'md',
-      isLoading = false,
+      size = 'default',
+      asChild = false,
       className = '',
-      disabled,
-      style,
+      isLoading = false,
       ...props
     },
     ref
   ) => {
-    const base =
-      'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-150 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed select-none';
+    // Default to button if not asChild
+    const Component = asChild ? 'span' : 'button';
 
-    const sizes = {
-      sm: 'px-3.5 py-1.5 text-xs gap-1.5',
-      md: 'px-4.5 py-2.5 text-sm gap-2',
-      lg: 'px-6 py-3 text-sm gap-2.5',
+    const base = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+
+    const sizeVariants = {
+      default: 'h-10 px-4',
+      sm: 'h-9 px-3',
+      lg: 'h-11 px-6',
+      icon: 'h-10 w-10',
     };
 
-    const variantStyles: Record<string, React.CSSProperties> = {
-      primary: {
-        background: 'linear-gradient(135deg, #22D3EE 0%, #38BDF8 100%)',
-        color: '#0B1528',
-        boxShadow: '0 0 20px rgba(34,211,238,0.2), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.15)',
-      },
-      secondary: {
-        background: 'var(--surface-hover)',
-        color: 'var(--foreground)',
-        border: '1px solid var(--border-default)',
-        boxShadow: 'var(--shadow-sm)',
-      },
-      danger: {
-        background: 'linear-gradient(135deg, #FB7185 0%, #F43F5E 100%)',
-        color: '#fff',
-        boxShadow: '0 0 16px rgba(251,113,133,0.2), 0 2px 8px rgba(0,0,0,0.3)',
-      },
-      ghost: {
-        background: 'transparent',
-        color: 'var(--foreground-muted)',
-      },
+    const variantVariants: Record<string, string> = {
+      primary: `bg-primary text-primary-foreground hover:bg-primary/90`,
+      secondary: `bg-secondary text-secondary-foreground hover:bg-secondary/80`,
+      destructive: `bg-destructive text-destructive-foreground hover:bg-destructive/90`,
+      outline: `border border-input hover:bg-accent hover:text-accent-foreground`,
+      ghost: `hover:bg-accent hover:text-accent-foreground`,
     };
 
     return (
-      <button
+      <Component
         ref={ref}
-        className={`${base} ${sizes[size]} ${className}`}
-        style={{ ...variantStyles[variant], ...style }}
-        disabled={disabled || isLoading}
-        onMouseEnter={(e) => {
-          const el = e.currentTarget as HTMLElement;
-          if (variant === 'primary') el.style.opacity = '0.92';
-          if (variant === 'secondary') el.style.background = 'var(--surface-active)';
-          if (variant === 'ghost') el.style.background = 'var(--surface-hover)';
-        }}
-        onMouseLeave={(e) => {
-          const el = e.currentTarget as HTMLElement;
-          if (variant === 'primary') el.style.opacity = '1';
-          if (variant === 'secondary') el.style.background = 'var(--surface-hover)';
-          if (variant === 'ghost') el.style.background = 'transparent';
-        }}
+        className={`${base} ${sizeVariants[size]} ${variantVariants[variant]} ${className}`}
         {...props}
+        disabled={isLoading}
       >
-        {isLoading && (
-          <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin flex-shrink-0" />
-        )}
+        {isLoading ? (
+          <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+        ) : null}
         {children}
-      </button>
+      </Component>
     );
   }
 );

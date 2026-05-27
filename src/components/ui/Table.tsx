@@ -13,8 +13,7 @@ const TableWrapper = forwardRef<HTMLDivElement, TableWrapperProps>(
         className={`rounded-2xl overflow-hidden ${className}`}
         style={{
           background: 'var(--surface-0)',
-          border: '1px solid var(--border-subtle)',
-          boxShadow: 'var(--shadow-md)',
+          boxShadow: 'var(--shadow-sm)',
         }}
         {...props}
       >
@@ -55,7 +54,6 @@ const TableHeader = forwardRef<HTMLTableSectionElement, TableHeaderProps>(
       <thead
         ref={ref}
         className={className}
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
         {...props}
       >
         {children}
@@ -88,9 +86,8 @@ const TableRow = forwardRef<HTMLTableRowElement, TableRowProps>(
       <tr
         ref={ref}
         className={`transition-colors ${className}`}
-        style={{ borderBottom: '1px solid var(--border-subtle)' }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.background = 'var(--surface-hover)';
+          (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.02)';
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -112,10 +109,10 @@ const TableHead = forwardRef<HTMLTableCellElement, TableHeadProps>(
     return (
       <th
         ref={ref}
-        className={`px-6 py-3.5 text-left text-[11px] font-semibold uppercase tracking-widest ${className}`}
+        className={`px-6 py-4 text-left text-[11px] font-semibold uppercase tracking-widest ${className}`}
         style={{
           color: 'var(--foreground-subtle)',
-          background: 'rgba(255,255,255,0.02)',
+          background: 'rgba(255,255,255,0.015)',
         }}
         {...props}
       >

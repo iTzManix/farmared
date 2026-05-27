@@ -30,7 +30,7 @@ export function NodeStatusIndicator({ status, showLatency = false }: NodeStatusI
         <>
           <Badge variant="success">Online</Badge>
           {showLatency && status.latencyMs !== undefined && (
-            <span className="text-xs text-slate-400">{status.latencyMs}ms</span>
+            <span className="text-xs" style={{ color: 'var(--foreground-subtle)' }}>{status.latencyMs}ms</span>
           )}
         </>
       ) : (

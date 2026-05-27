@@ -31,9 +31,9 @@ const colorMap = {
 };
 
 const bgColorMap = {
-  danger: 'bg-rose-500/10',
-  warning: 'bg-amber-500/10',
-  info: 'bg-cyan-500/10',
+  danger: 'bg-rose-500/8',
+  warning: 'bg-amber-500/8',
+  info: 'bg-cyan-500/8',
 };
 
 export function ConfirmDialog({
@@ -51,21 +51,19 @@ export function ConfirmDialog({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="sm">
-      <div className="text-center">
+      <div className="text-center pt-2">
         <div className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full ${bgColorMap[type]} mb-4`}>
           <Icon className={`h-6 w-6 ${colorMap[type]}`} />
         </div>
-        <h3 className="text-lg font-semibold text-slate-100 mb-2">{title}</h3>
-        <p className="text-sm text-slate-400 mb-6">{message}</p>
-        <div className="flex justify-center gap-3">
+        <h3 className="text-lg font-semibold text-foreground mb-2">{title}</h3>
+        <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{message}</p>
+        <div className="flex justify-center gap-3 mt-8">
           <Button variant="secondary" onClick={onClose} disabled={isLoading}>
             {cancelText}
           </Button>
           <Button
-            variant={type === 'danger' ? 'danger' : 'primary'}
-            onClick={() => {
-              onConfirm();
-            }}
+            variant={type === 'danger' ? 'destructive' : 'primary'}
+            onClick={() => { onConfirm(); }}
             isLoading={isLoading}
           >
             {confirmText}

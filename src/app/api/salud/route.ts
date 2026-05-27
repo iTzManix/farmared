@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { checkAllNodesHealth } from '@/lib/db';
-import { requireSuperAdmin } from '@/lib/auth/helpers';
+import { requireAuth } from '@/lib/auth/helpers';
 
 export async function GET() {
   try {
-    const session = await requireSuperAdmin();
+    await requireAuth();
   } catch {
     return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
   }

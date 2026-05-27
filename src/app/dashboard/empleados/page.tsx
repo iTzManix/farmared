@@ -1,17 +1,26 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { DataTable } from '@/components/shared/DataTable';
 import { EmpleadoForm } from '@/components/forms/EmpleadoForm';
 import { sileo } from 'sileo';
 import { Plus } from 'lucide-react';
-import { EmpleadoTable } from '@/types/database';
+
+interface EmpleadoRow {
+  id_empleado: number;
+  nombre: string;
+  cargo: string;
+  telefono: string;
+  email: string;
+  id_sucursal: number;
+  nombre_sucursal?: string;
+  pais: string;
+}
 
 export default function EmpleadosPage() {
-  const [data, setData] = useState<EmpleadoTable[]>([]);
+  const [data, setData] = useState<EmpleadoRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,11 +37,8 @@ export default function EmpleadosPage() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useEffect(() => { fetchData(); }, []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmit = async (formData: any) => {
     try {
       const res = await fetch('/api/empleados', {
@@ -41,7 +47,7 @@ export default function EmpleadosPage() {
         body: JSON.stringify(formData),
       });
       if (!res.ok) throw new Error('Error al guardar');
-      sileo.success({ title: 'Exito', description: 'Empleado guardado exitosamente' });
+      sileo.success({ title: 'Éxito', description: 'Empleado registrado exitosamente' });
       setIsModalOpen(false);
       fetchData();
     } catch {
@@ -50,18 +56,20 @@ export default function EmpleadosPage() {
   };
 
   const columns = [
-    { id: 'nombre', header: 'Nombre', accessorKey: 'nombre' as keyof EmpleadoTable, sortable: true },
-    { id: 'apellido', header: 'Apellido', accessorKey: 'apellido' as keyof EmpleadoTable },
-    { id: 'rol', header: 'Rol', accessorKey: 'rol' as keyof EmpleadoTable },
-    { id: 'email', header: 'Email', accessorKey: 'email' as keyof EmpleadoTable },
+    { id: 'nombre', header: 'Nombre', accessorKey: 'nombre' as keyof EmpleadoRow, sortable: true },
+    { id: 'cargo', header: 'Cargo', accessorKey: 'cargo' as keyof EmpleadoRow },
+    { id: 'telefono', header: 'Teléfono', accessorKey: 'telefono' as keyof EmpleadoRow },
+    { id: 'email', header: 'Email', accessorKey: 'email' as keyof EmpleadoRow },
+    { id: 'nombre_sucursal', header: 'Sucursal', accessorKey: 'nombre_sucursal' as keyof EmpleadoRow },
+    { id: 'pais', header: 'País', accessorKey: 'pais' as keyof EmpleadoRow },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-100">Empleados</h1>
-          <p className="text-slate-400 mt-2">Gestion del personal de sucursales</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Empleados</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--foreground-muted)' }}>Personal activo por nodo</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} className="gap-2">
           <Plus className="w-4 h-4" />
@@ -69,18 +77,12 @@ export default function EmpleadosPage() {
         </Button>
       </div>
 
-      <Card className="overflow-hidden">
-        <CardContent className="p-0 sm:p-0">
-          <div className="p-6">
-            <DataTable
-              data={data}
-              columns={columns}
-              searchKey="nombre"
-              isLoading={loading}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <DataTable
+        data={data}
+        columns={columns}
+        searchKey="nombre"
+        isLoading={loading}
+      />
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Nuevo Empleado">
         <EmpleadoForm onSubmit={handleSubmit} />
