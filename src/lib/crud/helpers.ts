@@ -13,6 +13,19 @@ export interface ApiHandler<T> {
 
 export async function handleApiError(error: unknown): Promise<NextResponse> {
   const message = error instanceof Error ? error.message : String(error);
+  
+  // SQL Server FK violation (error.number === 547) or Postgres (error.code === '23503')
+  if (
+    message.includes('REFERENCE constraint') || 
+    message.includes('foreign key constraint') ||
+    (typeof error === 'object' && error !== null && ('number' in error && (error as any).number === 547)) ||
+    (typeof error === 'object' && error !== null && ('code' in error && (error as any).code === '23503'))
+  ) {
+    return NextResponse.json({ 
+      error: 'No se puede eliminar este registro porque ya está en uso (tiene transacciones, ventas o stock asociado). Intenta editarlo en su lugar.' 
+    }, { status: 400 });
+  }
+
   console.error('[API Error]', error);
   return NextResponse.json({ error: message }, { status: 500 });
 }
